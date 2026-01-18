@@ -1,0 +1,896 @@
+<!DOCTYPE html>
+<html lang="de">
+{% load static %}
+<head>
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+  <title>Startseite - Omran Kebab</title>
+  <meta name="description" content="">
+  <meta name="keywords" content="">
+
+  <!-- Favicons -->
+  <link href="{% static 'assets/img/favicon.png' %}" rel="icon">
+  <link href="{% static 'assets/img/apple-touch-icon.png' %}" rel="apple-touch-icon">
+
+  <!-- Fonts (FIXED for Django) -->
+  <link href="https://fonts.googleapis.com" rel="preconnect">
+  <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&family=Inter:wght@100;200;300;400;500;600;700;800;900&family=Amatic+SC:wght@400;700&display=swap" rel="stylesheet">
+
+  <!-- Vendor CSS Files -->
+  <link href="{% static 'assets/vendor/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
+  <link href="{% static 'assets/vendor/bootstrap-icons/bootstrap-icons.css' %}" rel="stylesheet">
+  <link href="{% static 'assets/vendor/aos/aos.css' %}" rel="stylesheet">
+  <link href="{% static 'assets/vendor/glightbox/css/glightbox.min.css' %}" rel="stylesheet">
+  <link href="{% static 'assets/vendor/swiper/swiper-bundle.min.css' %}" rel="stylesheet">
+
+  <!-- Main CSS File -->
+  <link href="{% static 'assets/css/main.css' %}" rel="stylesheet">
+</head>
+
+<body class="index-page">
+
+  <header id="header" class="header d-flex align-items-center sticky-top">
+    <div class="container position-relative d-flex align-items-center justify-content-between">
+
+      <!-- ✅ Use Django URL (not index.html) -->
+      <a href="{% url 'home' %}" class="logo d-flex align-items-center me-auto me-xl-0">
+        <!-- <img src="{% static 'assets/img/logo.png' %}" alt=""> -->
+        <h1 class="sitename">Omran Kebab</h1>
+        <span>.</span>
+      </a>
+
+      <nav id="navmenu" class="navmenu">
+        <ul>
+          <li><a href="#hero" class="active">Startseite<br></a></li>
+          <li><a href="#about">Über uns</a></li>
+          <li><a href="#menu">Speisekarte</a></li>
+          <li><a href="#events">Events</a></li>
+          <li><a href="#gallery">Galerie</a></li>
+          <li><a href="#contact">Kontakt</a></li>
+          <li><a href="{% url 'track_order' %}">Bestellung verfolgen</a></li>
+        </ul>
+        <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
+      </nav>
+
+      <!-- ✅ Cart button + reservation -->
+      <div class="d-flex align-items-center gap-2">
+        <a href="{% url 'cart_detail' %}" class="btn btn-outline-dark position-relative">
+          <i class="bi bi-bag"></i>
+          <span class="d-none d-md-inline ms-1">Warenkorb</span>
+        </a>
+        <a class="btn-getstarted" href="#book-a-table">Tisch reservieren</a>
+      </div>
+
+    </div>
+  </header>
+
+  <main class="main">
+
+    <!-- Hero Section -->
+    <section id="hero" class="hero section light-background">
+      <div class="container">
+        <div class="row gy-4 justify-content-center justify-content-lg-between">
+          <div class="col-lg-5 order-2 order-lg-1 d-flex flex-column justify-content-center">
+            <h1 data-aos="fade-up">Genießen Sie unser<br>leckeres Essen</h1>
+            <p data-aos="fade-up" data-aos-delay="100">Frisch, lecker und mit Liebe zubereitet – orientalische Spezialitäten in Leipzig.</p>
+            <div class="d-flex" data-aos="fade-up" data-aos-delay="200">
+              <a href="#menu" class="btn-get-started">Jetzt bestellen</a>
+              <a href="https://www.youtube.com/watch?v=Y7f98aduVJ8" class="glightbox btn-watch-video d-flex align-items-center">
+                <i class="bi bi-play-circle"></i><span>Video ansehen</span>
+              </a>
+            </div>
+          </div>
+          <div class="col-lg-5 order-1 order-lg-2 hero-img" data-aos="zoom-out">
+            <img src="{% static 'assets/img/AI.png' %}" class="img-fluid animated" alt="">
+          </div>
+        </div>
+      </div>
+    </section>
+    <!-- /Hero Section -->
+
+    <!-- About Section -->
+    <section id="about" class="about section">
+
+      <div class="container section-title" data-aos="fade-up">
+        <h2>Über uns<br></h2>
+        <p><span>Erfahren Sie mehr</span> <span class="description-title">über uns</span></p>
+      </div>
+
+      <div class="container">
+        <div class="row gy-4">
+          <div class="col-lg-7" data-aos="fade-up" data-aos-delay="100">
+            <img src="{% static 'assets/img/about.jpg' %}" class="img-fluid mb-4" alt="">
+            <div class="book-a-table">
+              <h3>Tisch reservieren</h3>
+              <p>+49 151 40905653</p>
+            </div>
+          </div>
+
+          <div class="col-lg-5" data-aos="fade-up" data-aos-delay="250">
+            <div class="content ps-0 ps-lg-5">
+              <p class="fst-italic">
+                Omran Kebab steht für authentischen Geschmack und frisch zubereitete orientalische Spezialitäten im Herzen von Leipzig.
+              </p>
+
+              <ul>
+                <li><i class="bi bi-check-circle-fill"></i> <span>Frische Zutaten und sorgfältige Zubereitung – jeden Tag.</span></li>
+                <li><i class="bi bi-check-circle-fill"></i> <span>Große Auswahl: Döner, Dürüm, Tellergerichte & vegetarische Optionen.</span></li>
+                <li><i class="bi bi-check-circle-fill"></i> <span>Zusätzlich bieten wir traditionelle Speisen aus Afghanistan – nach originalen Rezepten und mit ausgewählten Gewürzen.</span></li>
+              </ul>
+
+              <p>
+                Unser Ziel ist es, Ihnen ein ehrliches, leckeres und zuverlässiges Essen zu servieren – ob vor Ort, zum Mitnehmen oder als Lieferung.
+              </p>
+
+              <div class="position-relative mt-4">
+                <img src="{% static 'assets/img/about-2.jpg' %}" class="img-fluid" alt="">
+                <a href="https://www.youtube.com/watch?v=Y7f98aduVJ8" class="glightbox pulsating-play-btn"></a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </section>
+    <!-- /About Section -->
+
+    <!-- Why Us Section -->
+    <section id="why-us" class="why-us section light-background">
+      <div class="container">
+        <div class="row gy-4">
+
+          <div class="col-lg-4" data-aos="fade-up" data-aos-delay="100">
+            <div class="why-box">
+              <h3>Warum Omran Kebab?</h3>
+              <p>
+                Wir stehen für Qualität, Geschmack und schnelle Zubereitung. Bei uns treffen klassische Döner-Spezialitäten auf traditionelle afghanische Gerichte – frisch, würzig und immer mit Liebe gemacht.
+              </p>
+              <div class="text-center">
+                <a href="#about" class="more-btn"><span>Mehr erfahren</span> <i class="bi bi-chevron-right"></i></a>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-lg-8 d-flex align-items-stretch">
+            <div class="row gy-4" data-aos="fade-up" data-aos-delay="200">
+
+              <div class="col-xl-4">
+                <div class="icon-box d-flex flex-column justify-content-center align-items-center">
+                  <i class="bi bi-clipboard-data"></i>
+                  <h4>Frische & Qualität</h4>
+                  <p>Ausgewählte Zutaten und tägliche Vorbereitung für besten Geschmack.</p>
+                </div>
+              </div>
+
+              <div class="col-xl-4" data-aos="fade-up" data-aos-delay="300">
+                <div class="icon-box d-flex flex-column justify-content-center align-items-center">
+                  <i class="bi bi-gem"></i>
+                  <h4>Authentische Rezepte</h4>
+                  <p>Orientalische Klassiker und afghanische Spezialitäten nach Originalrezept.</p>
+                </div>
+              </div>
+
+              <div class="col-xl-4" data-aos="fade-up" data-aos-delay="400">
+                <div class="icon-box d-flex flex-column justify-content-center align-items-center">
+                  <i class="bi bi-inboxes"></i>
+                  <h4>Schnell & unkompliziert</h4>
+                  <p>Vor Ort genießen, mitnehmen oder liefern lassen – ganz wie Sie möchten.</p>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+    <!-- /Why Us Section -->
+
+    <!-- Stats Section -->
+    <section id="stats" class="stats section dark-background">
+      <img src="{% static 'assets/img/stats-bg.jpg' %}" alt="" data-aos="fade-in">
+      <div class="container position-relative" data-aos="fade-up" data-aos-delay="100">
+        <div class="row gy-4">
+          <div class="col-lg-3 col-md-6">
+            <div class="stats-item text-center w-100 h-100">
+              <span data-purecounter-start="0" data-purecounter-end="232" data-purecounter-duration="1" class="purecounter"></span>
+              <p>Zufriedene Kunden</p>
+            </div>
+          </div>
+          <div class="col-lg-3 col-md-6">
+            <div class="stats-item text-center w-100 h-100">
+              <span data-purecounter-start="0" data-purecounter-end="521" data-purecounter-duration="1" class="purecounter"></span>
+              <p>Gerichte</p>
+            </div>
+          </div>
+          <div class="col-lg-3 col-md-6">
+            <div class="stats-item text-center w-100 h-100">
+              <span data-purecounter-start="0" data-purecounter-end="1453" data-purecounter-duration="1" class="purecounter"></span>
+              <p>Stunden Service</p>
+            </div>
+          </div>
+          <div class="col-lg-3 col-md-6">
+            <div class="stats-item text-center w-100 h-100">
+              <span data-purecounter-start="0" data-purecounter-end="32" data-purecounter-duration="1" class="purecounter"></span>
+              <p>Team</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <!-- /Stats Section -->
+
+    <!-- ======================================================
+         ✅ MENU SECTION (Wolt-style modal with radio/checkbox + qty)
+         ====================================================== -->
+    <section id="menu" class="menu section">
+
+      <div class="container section-title" data-aos="fade-up">
+        <h2>Speisekarte</h2>
+        <p><span>Entdecken Sie unsere</span> <span class="description-title">leckere Speisekarte</span></p>
+      </div>
+
+      <div class="container">
+
+        <!-- CATEGORY TABS -->
+        <ul class="nav nav-tabs d-flex justify-content-center" data-aos="fade-up" data-aos-delay="100">
+          {% for category in categories %}
+          <li class="nav-item">
+            <a class="nav-link {% if forloop.first %}active show{% endif %}"
+               data-bs-toggle="tab"
+               data-bs-target="#category-{{ category.slug }}">
+              <h4>{{ category.name }}</h4>
+            </a>
+          </li>
+          {% endfor %}
+        </ul>
+
+        <!-- TAB CONTENT -->
+        <div class="tab-content" data-aos="fade-up" data-aos-delay="200">
+
+          {% for category in categories %}
+          <div class="tab-pane fade {% if forloop.first %}active show{% endif %}"
+               id="category-{{ category.slug }}">
+
+            <div class="tab-header text-center">
+              <p>Speisekarte</p>
+              <h3>{{ category.name }}</h3>
+            </div>
+
+            <div class="row gy-5">
+
+              {% for product in category.products.all %}
+              {% if product.is_available %}
+
+              <!-- Product Card -->
+              <div class="col-lg-4 menu-item {% if forloop.counter > 6 %}d-none extra-item extra-{{ category.id }}{% endif %}">
+
+                {% if product.image %}
+                  <img src="{{ product.image.url }}" class="menu-img img-fluid" alt="{{ product.name }}">
+                {% else %}
+                  <img src="{% static 'assets/img/menu/menu-item-1.png' %}" class="menu-img img-fluid" alt="{{ product.name }}">
+                {% endif %}
+
+                <h4>{{ product.name }}</h4>
+
+                {% if product.description %}
+                  <p class="ingredients">{{ product.description|truncatechars:80 }}</p>
+                {% endif %}
+
+                <p class="price">{{ product.price }} €</p>
+
+                <button type="button"
+                        class="btn btn-sm btn-outline-primary mt-2"
+                        data-bs-toggle="modal"
+                        data-bs-target="#productModal-{{ product.id }}">
+                  Auswählen
+                </button>
+
+              </div>
+              <!-- /Product Card -->
+
+              <!-- Product Modal -->
+              <div class="modal fade" id="productModal-{{ product.id }}" tabindex="-1" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered modal-lg">
+                  <div class="modal-content">
+
+                    <form method="post" action="{% url 'add_to_cart' product.id %}" class="product-add-form">
+                      {% csrf_token %}
+
+                      <div class="modal-header">
+                        <h5 class="modal-title">{{ product.name }}</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                      </div>
+
+                      <div class="modal-body">
+
+                        <div class="row g-3">
+                          <!-- Left: Image + short info -->
+                          <div class="col-md-5">
+                            {% if product.image %}
+                              <img src="{{ product.image.url }}" class="img-fluid rounded" alt="{{ product.name }}">
+                            {% else %}
+                              <img src="{% static 'assets/img/menu/menu-item-1.png' %}" class="img-fluid rounded" alt="{{ product.name }}">
+                            {% endif %}
+                            {% if product.description %}
+                              <div class="mt-2 small text-muted">{{ product.description|truncatechars:160 }}</div>
+                            {% endif %}
+                          </div>
+
+                          <!-- Right: Options + qty + total -->
+                          <div class="col-md-7">
+
+                            <input type="hidden" class="js-base-price" value="{{ product.price }}">
+
+                            <!-- Options -->
+                            {% for pog in product.product_option_groups.all %}
+                              {% with group=pog.group %}
+                              {% if group.is_active %}
+                              {% with max_sel=pog.effective_max_select min_sel=pog.effective_min_select req=pog.effective_is_required %}
+
+                              <div class="mb-3 p-2 border rounded">
+                                <div class="d-flex justify-content-between align-items-center">
+                                  <div class="fw-bold">
+                                    {{ group.name }}
+                                    {% if req %}<span class="text-danger">*</span>{% endif %}
+                                  </div>
+                                  <div class="small text-muted">
+                                    {% if max_sel > 1 %}
+                                      Max. {{ max_sel }}
+                                    {% else %}
+                                      Wähle 1
+                                    {% endif %}
+                                  </div>
+                                </div>
+
+                                <div class="mt-2">
+                                  {% for opt in group.options.all %}
+                                    {% if opt.is_active %}
+                                      {% if max_sel > 1 %}
+                                        <!-- CHECKBOX -->
+                                        <div class="form-check">
+                                          <input class="form-check-input js-option"
+                                                 type="checkbox"
+                                                 name="group_{{ group.id }}[]"
+                                                 id="opt-{{ product.id }}-{{ opt.id }}"
+                                                 value="{{ opt.id }}"
+                                                 data-delta="{{ opt.price_delta|default:0 }}">
+                                          <label class="form-check-label" for="opt-{{ product.id }}-{{ opt.id }}">
+                                            {{ opt.name }}
+                                            {% if opt.price_delta %}
+                                              <span class="text-muted">(+{{ opt.price_delta }} €)</span>
+                                            {% endif %}
+                                          </label>
+                                        </div>
+                                      {% else %}
+                                        <!-- RADIO -->
+                                        <div class="form-check">
+                                          <input class="form-check-input js-option"
+                                                 type="radio"
+                                                 name="group_{{ group.id }}"
+                                                 id="opt-{{ product.id }}-{{ opt.id }}"
+                                                 value="{{ opt.id }}"
+                                                 data-delta="{{ opt.price_delta|default:0 }}"
+                                                 {% if req and forloop.first %}checked{% endif %}>
+                                          <label class="form-check-label" for="opt-{{ product.id }}-{{ opt.id }}">
+                                            {{ opt.name }}
+                                            {% if opt.price_delta %}
+                                              <span class="text-muted">(+{{ opt.price_delta }} €)</span>
+                                            {% endif %}
+                                          </label>
+                                        </div>
+                                      {% endif %}
+                                    {% endif %}
+                                  {% endfor %}
+                                </div>
+                              </div>
+
+                              {% endwith %}
+                              {% endif %}
+                              {% endwith %}
+                            {% empty %}
+                              <p class="text-muted">Keine Optionen verfügbar.</p>
+                            {% endfor %}
+
+                            <!-- Quantity -->
+                            <div class="d-flex align-items-center justify-content-between mt-3 p-2 border rounded">
+                              <div class="fw-bold">Menge</div>
+                              <div class="d-flex align-items-center gap-2">
+                                <button type="button" class="btn btn-outline-secondary btn-sm js-qty-minus">-</button>
+                                <input type="number"
+                                       name="quantity"
+                                       class="form-control form-control-sm text-center js-qty"
+                                       value="1" min="1" style="width: 70px;">
+                                <button type="button" class="btn btn-outline-secondary btn-sm js-qty-plus">+</button>
+                              </div>
+                            </div>
+
+                            <!-- Total -->
+                            <div class="mt-3 d-flex justify-content-between align-items-center">
+                              <div class="fw-bold">Gesamt</div>
+                              <div class="fs-5 fw-bold">
+                                <span class="js-total">{{ product.price }}</span> €
+                              </div>
+                            </div>
+
+                          </div>
+                        </div>
+
+                      </div>
+
+                      <div class="modal-footer">
+                        <button type="button" class="btn btn-light" data-bs-dismiss="modal">Abbrechen</button>
+                        <button type="submit" class="btn btn-primary">In den Warenkorb</button>
+                      </div>
+
+                    </form>
+
+                  </div>
+                </div>
+              </div>
+              <!-- /Product Modal -->
+
+              {% endif %}
+              {% empty %}
+              <p class="text-center">Keine Produkte verfügbar.</p>
+              {% endfor %}
+
+            </div>
+            {# ✅ Show more button only if there are more than 6 #}
+{% if category.products.count > 6 %}
+  <div class="text-center mt-4">
+    <button class="btn btn-outline-secondary btn-sm"
+            type="button"
+            data-category="{{ category.id }}"
+            onclick="showMoreMenuItems(this)">
+      Mehr anzeigen
+    </button>
+  </div>
+{% endif %}
+          </div>
+          {% endfor %}
+
+        </div>
+
+      </div>
+
+    </section>
+    <!-- /Menu Section -->
+
+    <!-- Testimonials Section -->
+    <section id="testimonials" class="testimonials section light-background">
+      <div class="container section-title" data-aos="fade-up">
+        <h2>BEWERTUNGEN</h2>
+        <p>Was sagen unsere <span class="description-title">Gäste über uns</span></p>
+      </div>
+
+      <div class="container" data-aos="fade-up" data-aos-delay="100">
+        <div class="swiper init-swiper">
+          <script type="application/json" class="swiper-config">
+            {
+              "loop": true,
+              "speed": 600,
+              "autoplay": { "delay": 5000 },
+              "slidesPerView": "auto",
+              "pagination": {
+                "el": ".swiper-pagination",
+                "type": "bullets",
+                "clickable": true
+              }
+            }
+          </script>
+
+          <div class="swiper-wrapper">
+            <div class="swiper-slide">
+              <div class="testimonial-item">
+                <div class="row gy-4 justify-content-center">
+                  <div class="col-lg-6">
+                    <div class="testimonial-content">
+                      <p>
+                        <i class="bi bi-quote quote-icon-left"></i>
+                        <span>Proin iaculis purus consequat sem cure digni ssim donec porttitora entum suscipit rhoncus. Accusantium quam, ultricies eget id, aliquam eget nibh et.</span>
+                        <i class="bi bi-quote quote-icon-right"></i>
+                      </p>
+                      <h3>Saul Goodman</h3>
+                      <h4>Geschäftsführer &amp; Gründer</h4>
+                      <div class="stars">
+                        <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-lg-2 text-center">
+                    <img src="{% static 'assets/img/testimonials/testimonials-1.jpg' %}" class="img-fluid testimonial-img" alt="">
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="swiper-pagination"></div>
+        </div>
+      </div>
+    </section>
+    <!-- /Testimonials Section -->
+
+    <!-- Events Section -->
+    <section id="events" class="events section">
+      <div class="container-fluid" data-aos="fade-up" data-aos-delay="100">
+        <div class="swiper init-swiper">
+          <script type="application/json" class="swiper-config">
+            {
+              "loop": true,
+              "speed": 600,
+              "autoplay": { "delay": 5000 },
+              "slidesPerView": "auto",
+              "pagination": {
+                "el": ".swiper-pagination",
+                "type": "bullets",
+                "clickable": true
+              },
+              "breakpoints": {
+                "320": { "slidesPerView": 1, "spaceBetween": 40 },
+                "1200": { "slidesPerView": 3, "spaceBetween": 1 }
+              }
+            }
+          </script>
+
+          <div class="swiper-wrapper">
+            <div class="swiper-slide event-item d-flex flex-column justify-content-end" style="background-image: url({% static 'assets/img/events-1.jpg' %})">
+              <h3>Individuelle Feiern</h3>
+              <div class="price align-self-start">€99</div>
+              <p class="description">Perfekt für kleine Feiern – wir gestalten Ihr Event nach Ihren Wünschen.</p>
+            </div>
+
+            <div class="swiper-slide event-item d-flex flex-column justify-content-end" style="background-image: url({% static 'assets/img/events-2.jpg' %})">
+              <h3>Private Feiern</h3>
+              <div class="price align-self-start">€289</div>
+              <p class="description">Ob Familie oder Freunde – genießen Sie eine private Atmosphäre und gutes Essen.</p>
+            </div>
+          </div>
+
+          <div class="swiper-pagination"></div>
+        </div>
+      </div>
+    </section>
+    <!-- /Events Section -->
+
+    <!-- Book A Table Section -->
+    <section id="book-a-table" class="book-a-table section">
+      <div class="container section-title" data-aos="fade-up">
+        <h2>Tisch reservieren</h2>
+        <p><span>Buchen Sie Ihren</span> <span class="description-title">Aufenthalt bei uns<br></span></p>
+      </div>
+
+      <div class="container">
+        <div class="row g-0" data-aos="fade-up" data-aos-delay="100">
+          <div class="col-lg-4 reservation-img" style="background-image: url({% static 'assets/img/reservation.jpg' %});"></div>
+
+          <div class="col-lg-8 d-flex align-items-center reservation-form-bg" data-aos="fade-up" data-aos-delay="200">
+            <!-- NOTE: this form still points to PHP in the template.
+                 Later we can wire it to Django TableReservation. -->
+            <form action="forms/book-a-table.php" method="post" role="form" class="php-email-form">
+              <div class="row gy-4">
+                <div class="col-lg-4 col-md-6">
+                  <input type="text" name="name" class="form-control" id="name" placeholder="Ihr Name" required="">
+                </div>
+                <div class="col-lg-4 col-md-6">
+                  <input type="email" class="form-control" name="email" id="email" placeholder="Ihre E-Mail" required="">
+                </div>
+                <div class="col-lg-4 col-md-6">
+                  <input type="text" class="form-control" name="phone" id="phone" placeholder="Ihre Telefonnummer" required="">
+                </div>
+                <div class="col-lg-4 col-md-6">
+                  <input type="date" name="date" class="form-control" id="date" placeholder="Datum" required="">
+                </div>
+                <div class="col-lg-4 col-md-6">
+                  <input type="time" class="form-control" name="time" id="time" placeholder="Uhrzeit" required="">
+                </div>
+                <div class="col-lg-4 col-md-6">
+                  <input type="number" class="form-control" name="people" id="people" placeholder="Anzahl Personen" required="">
+                </div>
+              </div>
+
+              <div class="form-group mt-3">
+                <textarea class="form-control" name="message" rows="5" placeholder="Nachricht"></textarea>
+              </div>
+
+              <div class="text-center mt-3">
+                <div class="loading">Lädt…</div>
+                <div class="error-message"></div>
+                <div class="sent-message">Ihre Reservierungsanfrage wurde gesendet. Wir melden uns telefonisch oder per E-Mail zur Bestätigung. Vielen Dank!</div>
+                <button type="submit">Tisch reservieren</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </section>
+    <!-- /Book A Table Section -->
+
+    <!-- Gallery Section -->
+    <section id="gallery" class="gallery section light-background">
+      <div class="container section-title" data-aos="fade-up">
+        <h2>Galerie</h2>
+        <p><span>Entdecken Sie</span> <span class="description-title">unsere Galerie</span></p>
+      </div>
+
+      <div class="container" data-aos="fade-up" data-aos-delay="100">
+        <div class="swiper init-swiper">
+          <script type="application/json" class="swiper-config">
+            {
+              "loop": true,
+              "speed": 600,
+              "autoplay": { "delay": 5000 },
+              "slidesPerView": "auto",
+              "centeredSlides": true,
+              "pagination": {
+                "el": ".swiper-pagination",
+                "type": "bullets",
+                "clickable": true
+              },
+              "breakpoints": {
+                "320": { "slidesPerView": 1, "spaceBetween": 0 },
+                "768": { "slidesPerView": 3, "spaceBetween": 20 },
+                "1200": { "slidesPerView": 5, "spaceBetween": 20 }
+              }
+            }
+          </script>
+
+          <div class="swiper-wrapper align-items-center">
+            <div class="swiper-slide"><a class="glightbox" data-gallery="images-gallery" href="{% static 'assets/img/gallery/gallery-1.jpg' %}"><img src="{% static 'assets/img/gallery/gallery-1.jpg' %}" class="img-fluid" alt=""></a></div>
+            <div class="swiper-slide"><a class="glightbox" data-gallery="images-gallery" href="{% static 'assets/img/gallery/gallery-2.jpg' %}"><img src="{% static 'assets/img/gallery/gallery-2.jpg' %}" class="img-fluid" alt=""></a></div>
+            <div class="swiper-slide"><a class="glightbox" data-gallery="images-gallery" href="{% static 'assets/img/gallery/gallery-3.jpg' %}"><img src="{% static 'assets/img/gallery/gallery-3.jpg' %}" class="img-fluid" alt=""></a></div>
+            <div class="swiper-slide"><a class="glightbox" data-gallery="images-gallery" href="{% static 'assets/img/gallery/gallery-4.jpg' %}"><img src="{% static 'assets/img/gallery/gallery-4.jpg' %}" class="img-fluid" alt=""></a></div>
+            <div class="swiper-slide"><a class="glightbox" data-gallery="images-gallery" href="{% static 'assets/img/gallery/gallery-5.jpg' %}"><img src="{% static 'assets/img/gallery/gallery-5.jpg' %}" class="img-fluid" alt=""></a></div>
+            <div class="swiper-slide"><a class="glightbox" data-gallery="images-gallery" href="{% static 'assets/img/gallery/gallery-6.jpg' %}"><img src="{% static 'assets/img/gallery/gallery-6.jpg' %}" class="img-fluid" alt=""></a></div>
+            <div class="swiper-slide"><a class="glightbox" data-gallery="images-gallery" href="{% static 'assets/img/gallery/gallery-7.jpg' %}"><img src="{% static 'assets/img/gallery/gallery-7.jpg' %}" class="img-fluid" alt=""></a></div>
+            <div class="swiper-slide"><a class="glightbox" data-gallery="images-gallery" href="{% static 'assets/img/gallery/gallery-8.jpg' %}"><img src="{% static 'assets/img/gallery/gallery-8.jpg' %}" class="img-fluid" alt=""></a></div>
+          </div>
+
+          <div class="swiper-pagination"></div>
+        </div>
+      </div>
+    </section>
+    <!-- /Gallery Section -->
+
+    <!-- Contact Section -->
+    <section id="contact" class="contact section">
+      <div class="container section-title" data-aos="fade-up">
+        <h2>Kontakt</h2>
+        <p><span>Brauchen Sie Hilfe?</span> <span class="description-title">Kontaktieren Sie uns</span></p>
+      </div>
+
+      <div class="container" data-aos="fade-up" data-aos-delay="100">
+
+        <div class="mb-5">
+          <iframe
+            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2356.404711537263!2d12.378938199999999!3d51.3345659!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x47a6f9010c971da7%3A0x13ebfd0abe9d5534!2sOmran%20Kebap!5e1!3m2!1sen!2sde!4v1767637686958!5m2!1sen!2sde"
+            style="width: 100%; height: 400px; border: 0;"
+            allowfullscreen=""
+            loading="lazy"
+            referrerpolicy="no-referrer-when-downgrade">
+          </iframe>
+        </div>
+
+        <div class="row gy-4">
+
+          <div class="col-md-6">
+            <div class="info-item d-flex align-items-center" data-aos="fade-up" data-aos-delay="200">
+              <i class="icon bi bi-geo-alt flex-shrink-0"></i>
+              <div>
+                <h3>Adresse</h3>
+                <p>Leplaystr. 3 · 04103 Leipzig</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-6">
+            <div class="info-item d-flex align-items-center" data-aos="fade-up" data-aos-delay="300">
+              <i class="icon bi bi-telephone flex-shrink-0"></i>
+              <div>
+                <h3>Rufen Sie uns an</h3>
+                <p>+49 151 40905653</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-6">
+            <div class="info-item d-flex align-items-center" data-aos="fade-up" data-aos-delay="400">
+              <i class="icon bi bi-envelope flex-shrink-0"></i>
+              <div>
+                <h3>Schreiben Sie uns eine E-Mail</h3>
+                <p>info@example.com</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-6">
+            <div class="info-item d-flex align-items-center" data-aos="fade-up" data-aos-delay="500">
+              <i class="icon bi bi-clock flex-shrink-0"></i>
+              <div>
+                <h3>Öffnungszeiten<br></h3>
+                <p><strong>Mo–Sa:</strong> 11:00–22:00 Uhr; <strong>So:</strong> 11:00–20:30 Uhr</p>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- NOTE: still template PHP. We can wire to Django later. -->
+        <form action="forms/contact.php" method="post" class="php-email-form" data-aos="fade-up" data-aos-delay="600">
+          <div class="row gy-4">
+            <div class="col-md-6">
+              <input type="text" name="name" class="form-control" placeholder="Ihr Name" required="">
+            </div>
+
+            <div class="col-md-6 ">
+              <input type="email" class="form-control" name="email" placeholder="Ihre E-Mail" required="">
+            </div>
+
+            <div class="col-md-12">
+              <input type="text" class="form-control" name="subject" placeholder="Betreff" required="">
+            </div>
+
+            <div class="col-md-12">
+              <textarea class="form-control" name="message" rows="6" placeholder="Nachricht" required=""></textarea>
+            </div>
+
+            <div class="col-md-12 text-center">
+              <div class="loading">Lädt…</div>
+              <div class="error-message"></div>
+              <div class="sent-message">Ihre Nachricht wurde gesendet. Vielen Dank!</div>
+              <button type="submit">Nachricht senden</button>
+            </div>
+          </div>
+        </form>
+
+      </div>
+    </section>
+    <!-- /Contact Section -->
+
+  </main>
+
+  <footer id="footer" class="footer dark-background">
+    <div class="container">
+      <div class="row gy-3">
+        <div class="col-lg-3 col-md-6 d-flex">
+          <i class="bi bi-geo-alt icon"></i>
+          <div class="address">
+            <h4>Adresse</h4>
+            <p>Leplaystr. 3</p>
+            <p>04103 Leipzig</p>
+            <p></p>
+          </div>
+        </div>
+
+        <div class="col-lg-3 col-md-6 d-flex">
+          <i class="bi bi-telephone icon"></i>
+          <div>
+            <h4>Kontakt</h4>
+            <p>
+              <strong>Telefon:</strong> <span>+49 151 40905653</span><br>
+              <strong>E-Mail:</strong> <span>info@example.com</span><br>
+            </p>
+          </div>
+        </div>
+
+        <div class="col-lg-3 col-md-6 d-flex">
+          <i class="bi bi-clock icon"></i>
+          <div>
+            <h4>Öffnungszeiten</h4>
+            <p>
+              <strong>Mo–Sa:</strong> <span>11:00–22:00 Uhr</span><br>
+              <strong>So:</strong> <span>11:00–20:30 Uhr</span>
+            </p>
+          </div>
+        </div>
+
+        <div class="col-lg-3 col-md-6">
+          <h4>Folgen Sie uns</h4>
+          <div class="social-links d-flex">
+            <a href="#" class="twitter"><i class="bi bi-twitter-x"></i></a>
+            <a href="#" class="facebook"><i class="bi bi-facebook"></i></a>
+            <a href="#" class="instagram"><i class="bi bi-instagram"></i></a>
+            <a href="#" class="linkedin"><i class="bi bi-linkedin"></i></a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="container copyright text-center mt-4">
+      <p>© <span>Copyright</span> <strong class="px-1 sitename">Omran Kebab</strong> <span>Alle Rechte vorbehalten.</span></p>
+      <div class="credits">
+        Designed by <a href="https://bootstrapmade.com/">BootstrapMade</a> Distributed by <a href="https://themewagon.com">ThemeWagon</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Scroll Top -->
+  <a href="#" id="scroll-top" class="scroll-top d-flex align-items-center justify-content-center">
+    <i class="bi bi-arrow-up-short"></i>
+  </a>
+
+  <!-- Preloader -->
+  <div id="preloader"></div>
+
+  <!-- Vendor JS Files -->
+  <script src="{% static 'assets/vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+  <script src="{% static 'assets/vendor/php-email-form/validate.js' %}"></script>
+  <script src="{% static 'assets/vendor/aos/aos.js' %}"></script>
+  <script src="{% static 'assets/vendor/glightbox/js/glightbox.min.js' %}"></script>
+  <script src="{% static 'assets/vendor/purecounter/purecounter_vanilla.js' %}"></script>
+  <script src="{% static 'assets/vendor/swiper/swiper-bundle.min.js' %}"></script>
+
+  <!-- Main JS File -->
+  <script src="{% static 'assets/js/main.js' %}"></script>
+
+  <!-- ✅ Modal: live total + qty +/- -->
+  <script>
+    function format2(n) {
+      return (Math.round(n * 100) / 100).toFixed(2);
+    }
+
+    function recalcTotal(form) {
+      const base = parseFloat(form.querySelector(".js-base-price")?.value || "0");
+      const qtyEl = form.querySelector(".js-qty");
+      const qty = Math.max(1, parseInt(qtyEl?.value || "1", 10));
+
+      let delta = 0;
+      form.querySelectorAll(".js-option:checked").forEach((el) => {
+        delta += parseFloat(el.dataset.delta || "0");
+      });
+
+      const total = (base + delta) * qty;
+      const totalEl = form.querySelector(".js-total");
+      if (totalEl) totalEl.textContent = format2(total);
+      if (qtyEl) qtyEl.value = qty;
+    }
+
+    document.addEventListener("click", function (e) {
+      const form = e.target.closest(".product-add-form");
+      if (!form) return;
+
+      if (e.target.classList.contains("js-qty-minus")) {
+        e.preventDefault();
+        const qtyEl = form.querySelector(".js-qty");
+        qtyEl.value = Math.max(1, parseInt(qtyEl.value || "1", 10) - 1);
+        recalcTotal(form);
+      }
+
+      if (e.target.classList.contains("js-qty-plus")) {
+        e.preventDefault();
+        const qtyEl = form.querySelector(".js-qty");
+        qtyEl.value = Math.max(1, parseInt(qtyEl.value || "1", 10) + 1);
+        recalcTotal(form);
+      }
+    });
+
+    document.addEventListener("change", function (e) {
+      const form = e.target.closest(".product-add-form");
+      if (!form) return;
+      if (e.target.classList.contains("js-option") || e.target.classList.contains("js-qty")) {
+        recalcTotal(form);
+      }
+    });
+
+    document.addEventListener("shown.bs.modal", function (e) {
+      const form = e.target.querySelector(".product-add-form");
+      if (form) recalcTotal(form);
+    });
+  </script>
+
+<script>
+  function showMoreMenuItems(btn) {
+    const catId = btn.getAttribute("data-category");
+    const hiddenItems = document.querySelectorAll(".extra-" + catId);
+
+    hiddenItems.forEach(el => el.classList.remove("d-none"));
+
+    btn.remove(); // remove the button after showing
+  }
+</script>
+  
+
+</body>
+</html>

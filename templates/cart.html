@@ -1,0 +1,412 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <title>Warenkorb – Omran Kebab</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link href="{% static 'assets/vendor/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
+  <link href="{% static 'assets/css/main.css' %}" rel="stylesheet">
+
+  <style>
+    .cart-summary-card, .checkout-card { border-radius: 14px; }
+    .badge-soft { background: rgba(0,0,0,.06); color: #333; }
+    .muted { color: rgba(0,0,0,.6); }
+    .req { color: #dc3545; font-weight: 700; }
+    .sticky-actions { position: sticky; bottom: 0; background: #fff; padding: 12px 0; border-top: 1px solid rgba(0,0,0,.08); }
+    .field-hint { font-size: 12px; color: rgba(0,0,0,.6); }
+  </style>
+</head>
+
+<body>
+
+<!-- Header -->
+<header class="header sticky-top bg-white shadow-sm">
+  <div class="container d-flex justify-content-between align-items-center py-3">
+    <div class="d-flex align-items-center gap-2">
+      <span style="font-size: 22px;">🛒</span>
+      <h3 class="mb-0">Warenkorb</h3>
+      <span class="badge rounded-pill badge-soft ms-2">{{ cart.items.count }} Artikel</span>
+    </div>
+
+    <a href="{% url 'home' %}" class="btn btn-outline-secondary btn-sm">
+      ← Zurück zur Speisekarte
+    </a>
+  </div>
+</header>
+
+<main class="container my-4 my-md-5">
+
+  {% if cart.items.all %}
+
+  <!-- Messages -->
+  {% if messages %}
+    <div class="mb-3">
+      {% for message in messages %}
+        <div class="alert {% if message.tags == 'success' %}alert-success{% else %}alert-danger{% endif %} mb-2">
+          {{ message }}
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  <div class="row g-4">
+
+    <!-- LEFT: items -->
+    <div class="col-lg-8">
+
+      <div class="card cart-summary-card shadow-sm">
+        <div class="card-header bg-white">
+          <div class="d-flex justify-content-between align-items-center">
+            <div class="fw-bold">Ihre Bestellung</div>
+            <span class="small muted">Prüfen Sie Ihre Artikel und gehen Sie dann zur Kasse.</span>
+          </div>
+        </div>
+
+        <div class="table-responsive">
+          <table class="table align-middle mb-0">
+            <thead class="table-light">
+              <tr>
+                <th style="width: 45%;">Produkt</th>
+                <th>Preis</th>
+                <th>Menge</th>
+                <th>Gesamt</th>
+                <th></th>
+              </tr>
+            </thead>
+
+            <tbody>
+              {% for item in cart.items.all %}
+              <tr>
+                <td>
+                  <strong>{{ item.product.name }}</strong>
+
+                  {% if item.chosen_options.all %}
+                    <div class="small text-muted mt-1">
+                      {% for ch in item.chosen_options.all %}
+                        • {{ ch.option.group.name }}: {{ ch.option.name }}
+                        {% if ch.price_delta_at_time %}
+                          ( +{{ ch.price_delta_at_time }} € )
+                        {% endif %}
+                        <br>
+                      {% endfor %}
+                    </div>
+                  {% endif %}
+                </td>
+
+                <td>{{ item.price_at_time }} €</td>
+                <td>{{ item.quantity }}</td>
+                <td><strong>{{ item.total_price }} €</strong></td>
+
+                <td class="text-end">
+                  <a href="{% url 'remove_from_cart' item.product.id %}" class="btn btn-sm btn-danger">
+                    Entfernen
+                  </a>
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+
+        <div class="card-footer bg-white">
+          <div class="d-flex justify-content-between align-items-center">
+            <div class="muted">Gesamtbetrag</div>
+            <div class="fs-5"><strong>{{ cart.total_price }} €</strong></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Mobile sticky checkout opener -->
+      <div class="d-lg-none sticky-actions mt-3">
+        <div class="container px-0 d-flex gap-2">
+          <a href="{% url 'home' %}" class="btn btn-outline-secondary w-50">Weiter einkaufen</a>
+          <button id="open-checkout-mobile"
+                  class="btn btn-primary w-50"
+                  type="button"
+                  data-bs-toggle="collapse"
+                  data-bs-target="#checkoutCollapse"
+                  aria-expanded="false"
+                  aria-controls="checkoutCollapse">
+            Zur Kasse · {{ cart.total_price }} €
+          </button>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- RIGHT: checkout -->
+    <div class="col-lg-4">
+
+      <div class="card checkout-card shadow-sm">
+        <div class="card-header bg-white d-flex justify-content-between align-items-center">
+          <div class="fw-bold">💳 Checkout</div>
+          <button id="open-checkout"
+                  class="btn btn-sm btn-primary"
+                  type="button"
+                  data-bs-toggle="collapse"
+                  data-bs-target="#checkoutCollapse"
+                  aria-expanded="false"
+                  aria-controls="checkoutCollapse">
+            Zur Kasse
+          </button>
+        </div>
+
+        <div class="collapse" id="checkoutCollapse">
+          <div class="card-body" id="checkout-card">
+
+            <div class="mb-3">
+              <div class="muted small">Gesamt</div>
+              <div class="fs-4 fw-bold">{{ cart.total_price }} €</div>
+            </div>
+
+            <div class="alert alert-info small">
+              Bitte füllen Sie alle Pflichtfelder aus. Danach werden die Zahlungsbuttons automatisch aktiviert.
+            </div>
+
+            <!-- Customer details (NO save button) -->
+            <form id="checkout-form" class="mb-3">
+              {% csrf_token %}
+              <div class="row g-2">
+                <div class="col-12">
+                  <label class="form-label mb-1">Vorname</label>
+                  <input type="text" class="form-control" name="first_name" id="first_name"
+                         placeholder="z.B. Ali">
+                </div>
+
+                <div class="col-12">
+                  <label class="form-label mb-1">Nachname <span class="req">*</span></label>
+                  <input type="text" class="form-control" name="last_name" id="last_name"
+                         placeholder="z.B. Ahmad" required>
+                  <div class="field-hint">Pflichtfeld</div>
+                </div>
+
+                <div class="col-12">
+                  <label class="form-label mb-1">Telefon <span class="req">*</span></label>
+                  <input type="text" class="form-control" name="phone" id="phone"
+                         value="{{ cart.phone }}" placeholder="+49 ..." required>
+                  <div class="field-hint">Pflichtfeld</div>
+                </div>
+
+                <div class="col-12">
+                  <label class="form-label mb-1">Straße & Hausnr. <span class="req">*</span></label>
+                  <input type="text" class="form-control" name="street" id="street"
+                         value="{{ cart.address_line }}" placeholder="Musterstraße 12" required>
+                  <div class="field-hint">Pflichtfeld</div>
+                </div>
+
+                <div class="col-5">
+                  <label class="form-label mb-1">PLZ <span class="req">*</span></label>
+                  <input type="text" class="form-control" name="postal_code" id="postal_code"
+                         value="{{ cart.postal_code }}" placeholder="04103" required>
+                  <div class="field-hint">Pflichtfeld</div>
+                </div>
+
+                <div class="col-7">
+                  <label class="form-label mb-1">Stadt <span class="req">*</span></label>
+                  <input type="text" class="form-control" name="city" id="city"
+                         value="{{ cart.city }}" placeholder="Leipzig" required>
+                  <div class="field-hint">Pflichtfeld</div>
+                </div>
+              </div>
+
+              <div class="small muted mt-2" id="payment-help">
+                Bitte füllen Sie die Pflichtfelder aus, um fortzufahren.
+              </div>
+            </form>
+
+            <!-- PAYMENTS -->
+            <!-- CASH (posts the same fields to backend) -->
+            <form method="post" action="{% url 'place_cash_order' %}" id="cash-form" class="mb-2">
+              {% csrf_token %}
+
+              <!-- hidden fields will be filled by JS before submit -->
+              <input type="hidden" name="first_name" id="cash_first_name">
+              <input type="hidden" name="last_name" id="cash_last_name">
+              <input type="hidden" name="phone" id="cash_phone">
+              <input type="hidden" name="street" id="cash_street">
+              <input type="hidden" name="postal_code" id="cash_postal_code">
+              <input type="hidden" name="city" id="cash_city">
+
+              <button class="btn btn-outline-dark w-100" type="submit" id="pay-cash" disabled>
+                🧾 Vor Ort bezahlen
+              </button>
+            </form>
+
+            <!-- STRIPE (AJAX POST with the same fields) -->
+            <button class="btn btn-primary w-100" type="button" id="pay-stripe" disabled>
+              💳 Online bezahlen (Karte)
+            </button>
+
+            <div class="small muted mt-2">
+              Hinweis: Bei Online-Zahlung werden Sie zu Stripe weitergeleitet.
+            </div>
+
+          </div>
+        </div>
+
+        <div class="card-footer bg-white d-none d-lg-flex gap-2">
+          <a href="{% url 'home' %}" class="btn btn-outline-secondary w-50">Weiter einkaufen</a>
+          <button class="btn btn-primary w-50"
+                  type="button"
+                  data-bs-toggle="collapse"
+                  data-bs-target="#checkoutCollapse"
+                  aria-expanded="false"
+                  aria-controls="checkoutCollapse"
+                  id="open-checkout-footer">
+            Zur Kasse
+          </button>
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+  {% else %}
+  <div class="text-center py-5">
+    <h4>Ihr Warenkorb ist leer 🛒</h4>
+    <p class="muted">Fügen Sie Produkte aus der Speisekarte hinzu.</p>
+    <a href="{% url 'home' %}" class="btn btn-primary mt-3">Zur Speisekarte</a>
+  </div>
+  {% endif %}
+
+</main>
+
+<script src="{% static 'assets/vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+
+<script>
+  // Open + scroll to checkout
+  function scrollToCheckout() {
+    setTimeout(() => {
+      document.getElementById("checkout-card")?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }, 200);
+  }
+  document.getElementById("open-checkout")?.addEventListener("click", scrollToCheckout);
+  document.getElementById("open-checkout-footer")?.addEventListener("click", scrollToCheckout);
+  document.getElementById("open-checkout-mobile")?.addEventListener("click", scrollToCheckout);
+
+  // CSRF helper (for Stripe AJAX POST)
+  function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== "") {
+      const cookies = document.cookie.split(";");
+      for (let i = 0; i < cookies.length; i++) {
+        const cookie = cookies[i].trim();
+        if (cookie.substring(0, name.length + 1) === (name + "=")) {
+          cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+          break;
+        }
+      }
+    }
+    return cookieValue;
+  }
+
+  // Enable payment buttons only when required fields are filled
+  const requiredIds = ["last_name", "phone", "street", "postal_code", "city"];
+  const cashBtn = document.getElementById("pay-cash");
+  const stripeBtn = document.getElementById("pay-stripe");
+  const helpTxt = document.getElementById("payment-help");
+
+  function getVal(id) {
+    const el = document.getElementById(id);
+    return (el?.value || "").trim();
+  }
+
+  function allRequiredFilled() {
+    return requiredIds.every(id => getVal(id).length > 0);
+  }
+
+  function setEnabled(enabled) {
+    if (cashBtn) cashBtn.disabled = !enabled;
+    if (stripeBtn) stripeBtn.disabled = !enabled;
+    if (helpTxt) {
+      helpTxt.textContent = enabled
+        ? "✓ Daten vollständig. Bitte Zahlungsart wählen."
+        : "Bitte füllen Sie die Pflichtfelder aus, um fortzufahren.";
+    }
+  }
+
+  function syncCashHiddenFields() {
+    document.getElementById("cash_first_name").value = getVal("first_name");
+    document.getElementById("cash_last_name").value = getVal("last_name");
+    document.getElementById("cash_phone").value = getVal("phone");
+    document.getElementById("cash_street").value = getVal("street");
+    document.getElementById("cash_postal_code").value = getVal("postal_code");
+    document.getElementById("cash_city").value = getVal("city");
+  }
+
+  // Initial state (if cart already has some saved values)
+  setEnabled(allRequiredFilled());
+
+  // On input changes
+  ["first_name", ...requiredIds].forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.addEventListener("input", () => {
+      setEnabled(allRequiredFilled());
+    });
+  });
+
+  // Before cash submit: ensure still valid + copy fields
+  document.getElementById("cash-form")?.addEventListener("submit", function (e) {
+    if (!allRequiredFilled()) {
+      e.preventDefault();
+      setEnabled(false);
+      alert("Bitte füllen Sie alle Pflichtfelder (*) aus.");
+      return;
+    }
+    syncCashHiddenFields();
+  });
+
+  // Stripe: POST details + create checkout session
+  document.getElementById("pay-stripe")?.addEventListener("click", async () => {
+    if (!allRequiredFilled()) {
+      setEnabled(false);
+      alert("Bitte füllen Sie alle Pflichtfelder (*) aus.");
+      return;
+    }
+
+    const csrftoken = getCookie("csrftoken");
+
+    // Build form data from checkout form
+    const fd = new FormData();
+    fd.append("first_name", getVal("first_name"));
+    fd.append("last_name", getVal("last_name"));
+    fd.append("phone", getVal("phone"));
+    fd.append("street", getVal("street"));
+    fd.append("postal_code", getVal("postal_code"));
+    fd.append("city", getVal("city"));
+
+    try {
+      const resp = await fetch("{% url 'create_stripe_checkout_session' %}", {
+        method: "POST",                 // ✅ POST because we send user details
+        credentials: "same-origin",
+        headers: {
+          "X-Requested-With": "XMLHttpRequest",
+          "X-CSRFToken": csrftoken,
+        },
+        body: fd,
+      });
+
+      const contentType = resp.headers.get("content-type") || "";
+      const data = contentType.includes("application/json")
+        ? await resp.json()
+        : { ok: false, message: await resp.text() };
+
+      if (!resp.ok || !data.ok) {
+        alert(data.message || "Fehler bei der Zahlung");
+        return;
+      }
+
+      window.location.href = data.checkout_url;
+    } catch (e) {
+      alert("Netzwerkfehler bei der Zahlung");
+    }
+  });
+</script>
+
+</body>
+</html>

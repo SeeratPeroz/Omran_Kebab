@@ -1,0 +1,61 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Order Confirmed – Omran Kebab</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="{% static 'assets/vendor/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
+  <link href="{% static 'assets/css/main.css' %}" rel="stylesheet">
+</head>
+<body>
+
+<div class="container my-5">
+  <div class="card shadow-sm">
+    <div class="card-body">
+      <h3 class="mb-2">✅ Order sent to restaurant!</h3>
+      <p class="mb-3">You chose <strong>Pay on pickup (Cash)</strong>.</p>
+
+      <div class="alert alert-success">
+        <div><strong>Your order number:</strong></div>
+        <div class="fs-3 fw-bold">{{ order.order_number }}</div>
+      </div>
+
+      <div class="mb-3">
+        <strong>Current status:</strong> {{ order.get_status_display }}
+      </div>
+
+      <h5 class="mt-4">Items</h5>
+      <ul class="list-group">
+        {% for item in order.items.all %}
+          <li class="list-group-item d-flex justify-content-between">
+            <div>
+              <strong>{{ item.product.name }}</strong> × {{ item.quantity }}
+              {% if item.chosen_options.all %}
+                <div class="small text-muted mt-1">
+                  {% for ch in item.chosen_options.all %}
+                    • {{ ch.option.group.name }}: {{ ch.option.name }}<br>
+                  {% endfor %}
+                </div>
+              {% endif %}
+            </div>
+            <div>{{ item.total_price }} €</div>
+          </li>
+        {% endfor %}
+      </ul>
+
+      <div class="d-flex justify-content-between mt-3">
+        <strong>Total</strong>
+        <strong>{{ order.total_price }} €</strong>
+      </div>
+
+      <div class="mt-4 d-flex gap-2">
+        <a class="btn btn-primary" href="{% url 'track_order' %}">Track order</a>
+        <a class="btn btn-outline-secondary" href="{% url 'home' %}">Back to menu</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
