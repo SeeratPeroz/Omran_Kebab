@@ -1,0 +1,71 @@
+/* Hero Buttons Wrapper */
+.hero-buttons {
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+/* Order Button */
+.btn-get-started {
+  background: linear-gradient(135deg, #ce1212, #ff4b2b);
+  color: #fff;
+  padding: 14px 32px;
+  border-radius: 50px;
+  font-size: 16px;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  box-shadow: 0 8px 25px rgba(206, 18, 18, 0.35);
+  transition: all 0.3s ease;
+}
+
+.btn-get-started i {
+  font-size: 18px;
+}
+
+.btn-get-started:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 35px rgba(206, 18, 18, 0.5);
+  color: #fff;
+}
+
+/* Reservation Button */
+.btn-reservation {
+  background: #ffffff;
+  color: #ce1212;
+  padding: 14px 30px;
+  border-radius: 50px;
+  font-size: 16px;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  border: 2px solid #ce1212;
+  transition: all 0.3s ease;
+}
+
+.btn-reservation i {
+  font-size: 18px;
+}
+
+.btn-reservation:hover {
+  background: #ce1212;
+  color: #ffffff;
+  transform: translateY(-3px);
+  box-shadow: 0 10px 30px rgba(206, 18, 18, 0.4);
+}
+
+.hero .container {
+  position: relative;
+  z-index: 2;
+}
+
+.hero-img {
+  position: relative;
+  z-index: 1;
+}
+
+.hero-buttons {
+  position: relative;
+  z-index: 3;
+}

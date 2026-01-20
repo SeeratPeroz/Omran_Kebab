@@ -27,5 +27,10 @@ urlpatterns = [
     path("order/success/<str:order_number>/", views.order_success, name="order_success"),
     path("order/track/", views.track_order, name="track_order"),
 
+# Reservation
+    path("reservation/create/", views.create_reservation, name="create_reservation"),
+
+
+
 
 ]

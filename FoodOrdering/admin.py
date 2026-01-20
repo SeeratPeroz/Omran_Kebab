@@ -50,16 +50,8 @@ class ProductAdmin(admin.ModelAdmin):
     image_preview.short_description = "Image"
 
 
-# -------------------------
-# RESERVATIONS
-# -------------------------
 
-@admin.register(TableReservation)
-class TableReservationAdmin(admin.ModelAdmin):
-    list_display = ("name", "phone", "date", "time", "people", "status", "created_at")
-    list_filter = ("status", "date")
-    search_fields = ("name", "phone", "email")
-    ordering = ("-created_at",)
+
 
 
 # -------------------------
@@ -158,3 +150,14 @@ class ProductOptionGroupAdmin(admin.ModelAdmin):
     search_fields = ("product__name", "group__name")
     autocomplete_fields = ("product", "group")
     ordering = ("product", "sort_order")
+
+# -------------------------
+# RESERVATIONS
+# -------------------------
+
+@admin.register(TableReservation)
+class TableReservationAdmin(admin.ModelAdmin):
+    list_display = ("name", "phone", "date", "time", "people", "status", "created_at")
+    list_filter = ("status", "date")
+    search_fields = ("name", "phone", "email")
+    ordering = ("-created_at",)

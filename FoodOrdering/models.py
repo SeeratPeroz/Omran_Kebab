@@ -35,24 +35,25 @@ class Product(models.Model):
 
 
 class TableReservation(models.Model):
-    STATUS_CHOICES = (
-        ("PENDING", "Pending"),
-        ("CONFIRMED", "Confirmed"),
-        ("CANCELLED", "Cancelled"),
-    )
-
     name = models.CharField(max_length=120)
-    phone = models.CharField(max_length=50)
-    email = models.EmailField(blank=True)
+    email = models.EmailField()
+    phone = models.CharField(max_length=30)
+
     date = models.DateField()
     time = models.TimeField()
     people = models.PositiveIntegerField()
+
     message = models.TextField(blank=True)
-    status = models.CharField(max_length=12, choices=STATUS_CHOICES, default="PENDING")
     created_at = models.DateTimeField(auto_now_add=True)
 
+    status = models.CharField(
+        max_length=20,
+        choices=[("new", "New"), ("confirmed", "Confirmed"), ("cancelled", "Cancelled")],
+        default="new",
+    )
+
     def __str__(self):
-        return f"Reservation {self.name} - {self.date} {self.time} ({self.people})"
+        return f"{self.name} - {self.date} {self.time} ({self.people})"
 
 
 # -----------------------------

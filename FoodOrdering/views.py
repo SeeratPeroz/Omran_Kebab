@@ -10,6 +10,8 @@ from django.contrib import messages
 from django.db import transaction
 from django.shortcuts import render, get_object_or_404, redirect
 from django.db.models import Prefetch
+from .forms import TableReservationForm
+
 from .models import (
     Product, Order, OrderItem, Category,
     ProductOptionGroup, Option, OrderItemOption
@@ -24,8 +26,12 @@ def home(request):
             "products",
             "products__product_option_groups__group__options",
         )
-    )
-    return render(request, "index.html", {"categories": categories})
+    )    
+    return render(request, "index.html", {  
+        "categories": categories,
+        "reservation_form": TableReservationForm()
+    })
+
 
 
 def get_cart(request):
@@ -395,3 +401,17 @@ def track_order(request):
             error = "Order number not found. Please check and try again."
 
     return render(request, "track_order.html", {"order": order, "error": error})
+
+# Table Reservation view
+@require_POST
+def create_reservation(request):
+    form = TableReservationForm(request.POST)
+    if form.is_valid():
+        form.save()
+        messages.success(
+            request,
+            "Ihre Reservierungsanfrage wurde gesendet. Wir melden uns zur Bestätigung. Vielen Dank!"
+        )
+    else:
+        messages.error(request, "Bitte prüfen Sie Ihre Eingaben. Die Reservierung konnte nicht gesendet werden.")
+    return redirect("home")

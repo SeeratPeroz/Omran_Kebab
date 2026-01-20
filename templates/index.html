@@ -26,18 +26,27 @@
 
   <!-- Main CSS File -->
   <link href="{% static 'assets/css/main.css' %}" rel="stylesheet">
+  <link href="{% static 'assets/css/style.css' %}" rel="stylesheet">
 </head>
 
 <body class="index-page">
-
+            <!-- ✅ Show Django messages inside the form -->
+            {% if messages %}
+              <div class="mt-3">
+                {% for message in messages %}
+                  <div class="alert alert-{{ message.tags }} mb-2" role="alert">{{ message }}</div>
+                {% endfor %}
+              </div>
+            {% endif %}
   <header id="header" class="header d-flex align-items-center sticky-top">
     <div class="container position-relative d-flex align-items-center justify-content-between">
 
       <!-- ✅ Use Django URL (not index.html) -->
       <a href="{% url 'home' %}" class="logo d-flex align-items-center me-auto me-xl-0">
         <!-- <img src="{% static 'assets/img/logo.png' %}" alt=""> -->
-        <h1 class="sitename">Omran Kebab</h1>
-        <span>.</span>
+        <h1 class="sitename">Omran</h1>
+        <span> </span>
+        <span> Kebab</span>
       </a>
 
       <nav id="navmenu" class="navmenu">
@@ -59,7 +68,7 @@
           <i class="bi bi-bag"></i>
           <span class="d-none d-md-inline ms-1">Warenkorb</span>
         </a>
-        <a class="btn-getstarted" href="#book-a-table">Tisch reservieren</a>
+        <a class="btn-getstarted" href="book-a-table">Tisch reservieren</a>
       </div>
 
     </div>
@@ -67,27 +76,44 @@
 
   <main class="main">
 
-    <!-- Hero Section -->
-    <section id="hero" class="hero section light-background">
-      <div class="container">
-        <div class="row gy-4 justify-content-center justify-content-lg-between">
-          <div class="col-lg-5 order-2 order-lg-1 d-flex flex-column justify-content-center">
-            <h1 data-aos="fade-up">Genießen Sie unser<br>leckeres Essen</h1>
-            <p data-aos="fade-up" data-aos-delay="100">Frisch, lecker und mit Liebe zubereitet – orientalische Spezialitäten in Leipzig.</p>
-            <div class="d-flex" data-aos="fade-up" data-aos-delay="200">
-              <a href="#menu" class="btn-get-started">Jetzt bestellen</a>
-              <a href="https://www.youtube.com/watch?v=Y7f98aduVJ8" class="glightbox btn-watch-video d-flex align-items-center">
-                <i class="bi bi-play-circle"></i><span>Video ansehen</span>
-              </a>
-            </div>
-          </div>
-          <div class="col-lg-5 order-1 order-lg-2 hero-img" data-aos="zoom-out">
-            <img src="{% static 'assets/img/AI.png' %}" class="img-fluid animated" alt="">
-          </div>
+<!-- Hero Section -->
+<section id="hero" class="hero section light-background">
+  <div class="container">
+    <div class="row gy-4 justify-content-center justify-content-lg-between">
+
+      <!-- Text + Buttons -->
+      <div class="col-lg-5 order-2 order-lg-1 d-flex flex-column justify-content-center">
+        <h1 data-aos="fade-up">
+          Genießen Sie unser<br>leckeres Essen
+        </h1>
+
+        <p data-aos="fade-up" data-aos-delay="100">
+          Frisch, lecker und mit Liebe zubereitet – orientalische Spezialitäten in Leipzig.
+        </p>
+
+        <div class="d-flex hero-buttons" data-aos="fade-up" data-aos-delay="200">
+          <a href="#menu" class="btn-get-started">
+            <i class="bi bi-cart-check"></i>
+            Jetzt bestellen
+          </a>
+
+          <a href="#book-a-table" class="btn-reservation">
+            <i class="bi bi-calendar-check"></i>
+            Tisch reservieren
+          </a>
         </div>
       </div>
-    </section>
-    <!-- /Hero Section -->
+
+      <!-- Hero Image -->
+      <div class="col-lg-5 order-1 order-lg-2 hero-img" data-aos="zoom-out">
+        <img src="{% static 'assets/img/AI.png' %}" class="img-fluid animated" alt="Omran Kebab">
+      </div>
+
+    </div>
+  </div>
+</section>
+<!-- /Hero Section -->
+
 
     <!-- About Section -->
     <section id="about" class="about section">
@@ -555,58 +581,60 @@
     </section>
     <!-- /Events Section -->
 
-    <!-- Book A Table Section -->
-    <section id="book-a-table" class="book-a-table section">
-      <div class="container section-title" data-aos="fade-up">
-        <h2>Tisch reservieren</h2>
-        <p><span>Buchen Sie Ihren</span> <span class="description-title">Aufenthalt bei uns<br></span></p>
-      </div>
+  <!-- Book A Table Section -->
+  <section id="book-a-table" class="book-a-table section">
+    <div class="container section-title" data-aos="fade-up">
+      <h2>Tisch reservieren</h2>
+      <p><span>Buchen Sie Ihren</span> <span class="description-title">Aufenthalt bei uns<br></span></p>
+    </div>
 
-      <div class="container">
-        <div class="row g-0" data-aos="fade-up" data-aos-delay="100">
-          <div class="col-lg-4 reservation-img" style="background-image: url({% static 'assets/img/reservation.jpg' %});"></div>
+    <div class="container">
+      <div class="row g-0" data-aos="fade-up" data-aos-delay="100">
+        <div class="col-lg-4 reservation-img"
+            style="background-image: url({% static 'assets/img/reservation.jpg' %});">
+        </div>
 
-          <div class="col-lg-8 d-flex align-items-center reservation-form-bg" data-aos="fade-up" data-aos-delay="200">
-            <!-- NOTE: this form still points to PHP in the template.
-                 Later we can wire it to Django TableReservation. -->
-            <form action="forms/book-a-table.php" method="post" role="form" class="php-email-form">
-              <div class="row gy-4">
-                <div class="col-lg-4 col-md-6">
-                  <input type="text" name="name" class="form-control" id="name" placeholder="Ihr Name" required="">
-                </div>
-                <div class="col-lg-4 col-md-6">
-                  <input type="email" class="form-control" name="email" id="email" placeholder="Ihre E-Mail" required="">
-                </div>
-                <div class="col-lg-4 col-md-6">
-                  <input type="text" class="form-control" name="phone" id="phone" placeholder="Ihre Telefonnummer" required="">
-                </div>
-                <div class="col-lg-4 col-md-6">
-                  <input type="date" name="date" class="form-control" id="date" placeholder="Datum" required="">
-                </div>
-                <div class="col-lg-4 col-md-6">
-                  <input type="time" class="form-control" name="time" id="time" placeholder="Uhrzeit" required="">
-                </div>
-                <div class="col-lg-4 col-md-6">
-                  <input type="number" class="form-control" name="people" id="people" placeholder="Anzahl Personen" required="">
-                </div>
+        <div class="col-lg-8 d-flex align-items-center reservation-form-bg" data-aos="fade-up" data-aos-delay="200">
+
+          <!-- ✅ Keep php-email-form class so the template button design works -->
+          <form action="{% url 'create_reservation' %}" method="post" role="form" class="php-email-form">
+            {% csrf_token %}
+
+            <div class="row gy-4">
+              <div class="col-lg-4 col-md-6">
+                <input type="text" name="name" class="form-control" id="name" placeholder="Ihr Name" required>
               </div>
-
-              <div class="form-group mt-3">
-                <textarea class="form-control" name="message" rows="5" placeholder="Nachricht"></textarea>
+              <div class="col-lg-4 col-md-6">
+                <input type="email" class="form-control" name="email" id="email" placeholder="Ihre E-Mail" required>
               </div>
-
-              <div class="text-center mt-3">
-                <div class="loading">Lädt…</div>
-                <div class="error-message"></div>
-                <div class="sent-message">Ihre Reservierungsanfrage wurde gesendet. Wir melden uns telefonisch oder per E-Mail zur Bestätigung. Vielen Dank!</div>
-                <button type="submit">Tisch reservieren</button>
+              <div class="col-lg-4 col-md-6">
+                <input type="text" class="form-control" name="phone" id="phone" placeholder="Ihre Telefonnummer" required>
               </div>
-            </form>
-          </div>
+              <div class="col-lg-4 col-md-6">
+                <input type="date" name="date" class="form-control" id="date" required>
+              </div>
+              <div class="col-lg-4 col-md-6">
+                <input type="time" class="form-control" name="time" id="time" required>
+              </div>
+              <div class="col-lg-4 col-md-6">
+                <input type="number" class="form-control" name="people" id="people" placeholder="Anzahl Personen" required>
+              </div>
+            </div>
+
+            <div class="form-group mt-3">
+              <textarea class="form-control" name="message" rows="5" placeholder="Nachricht"></textarea>
+            </div>
+            <div class="text-center mt-3">
+              <button type="submit">Tisch reservieren</button>
+            </div>
+          </form>
+
         </div>
       </div>
-    </section>
-    <!-- /Book A Table Section -->
+    </div>
+  </section>
+  <!-- /Book A Table Section -->
+
 
     <!-- Gallery Section -->
     <section id="gallery" class="gallery section light-background">
@@ -816,7 +844,6 @@
 
   <!-- Vendor JS Files -->
   <script src="{% static 'assets/vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
-  <script src="{% static 'assets/vendor/php-email-form/validate.js' %}"></script>
   <script src="{% static 'assets/vendor/aos/aos.js' %}"></script>
   <script src="{% static 'assets/vendor/glightbox/js/glightbox.min.js' %}"></script>
   <script src="{% static 'assets/vendor/purecounter/purecounter_vanilla.js' %}"></script>
