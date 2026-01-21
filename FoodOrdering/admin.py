@@ -11,6 +11,7 @@ from .models import (
     Option,
     ProductOptionGroup,
     OrderItemOption,
+    Event,
 )
 
 # -------------------------
@@ -161,3 +162,22 @@ class TableReservationAdmin(admin.ModelAdmin):
     list_filter = ("status", "date")
     search_fields = ("name", "phone", "email")
     ordering = ("-created_at",)
+
+
+# -------------------------
+# EVENTS
+# -------------------------
+
+@admin.register(Event)
+class EventAdmin(admin.ModelAdmin):
+    list_display = ("title", "price", "is_active", "sort_order", "image_preview", "created_at")
+    list_filter = ("is_active", "created_at")
+    search_fields = ("title", "slug", "description")
+    prepopulated_fields = {"slug": ("title",)}
+    ordering = ("sort_order", "title")
+
+    def image_preview(self, obj):
+        if obj.image:
+            return format_html('<img src="{}" style="height:40px; width:auto; border-radius:6px;" />', obj.image.url)
+        return "-"
+    image_preview.short_description = "Image"

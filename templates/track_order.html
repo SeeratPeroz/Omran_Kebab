@@ -1,9 +1,9 @@
 {% load static %}
 <!DOCTYPE html>
-<html lang="en">
+<html lang="de">
 <head>
   <meta charset="UTF-8">
-  <title>Track order – Omran Kebab</title>
+  <title>Bestellung verfolgen – Omran Kebab</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link href="{% static 'assets/vendor/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
   <link href="{% static 'assets/css/main.css' %}" rel="stylesheet">
@@ -13,15 +13,15 @@
 <div class="container my-5">
   <div class="card shadow-sm">
     <div class="card-body">
-      <h3 class="mb-3">📦 Bestellung verfolgenr</h3>
+      <h3 class="mb-3">📦 Bestellung verfolgen</h3>
 
       <form method="post" class="row g-2">
         {% csrf_token %}
         <div class="col-md-8">
-          <input type="text" class="form-control" name="order_number" placeholder="Enter order number (e.g. OK-20260113-ABC123)" required>
+          <input type="text" class="form-control" name="order_number" placeholder="Bestellnummer eingeben (z.B. OK-20260113-ABC123)" required>
         </div>
         <div class="col-md-4">
-          <button class="btn btn-primary w-100" type="submit">Check status</button>
+          <button class="btn btn-primary w-100" type="submit">Status prüfen</button>
         </div>
       </form>
 
@@ -31,9 +31,9 @@
 
       {% if order %}
         <hr class="my-4">
-        <h5>Order: <strong>{{ order.order_number }}</strong></h5>
+        <h5>Bestellung: <strong>{{ order.order_number }}</strong></h5>
         <p>Status: <strong>{{ order.get_status_display }}</strong></p>
-        <p class="text-muted small">Created: {{ order.created_at }}</p>
+        <p class="text-muted small">Erstellt: {{ order.created_at }}</p>
       {% endif %}
 
       <div class="mt-3">

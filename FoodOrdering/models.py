@@ -223,3 +223,25 @@ class OrderItemOption(models.Model):
 
     def __str__(self):
         return f"{self.order_item} - {self.option.group.name}: {self.option.name}"
+
+
+class Event(models.Model):
+    """
+    Event model for displaying events on the website.
+    Example: "Individuelle Feiern" (Individual Celebrations), "Private Feiern" (Private Celebrations)
+    """
+    title = models.CharField(max_length=160)
+    slug = models.SlugField(max_length=180, unique=True, blank=True)
+    description = models.TextField()
+    price = models.DecimalField(max_digits=8, decimal_places=2)
+    image = models.ImageField(upload_to="events/", blank=True, null=True)
+    is_active = models.BooleanField(default=True)
+    sort_order = models.PositiveIntegerField(default=0)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ["sort_order", "title"]
+
+    def __str__(self):
+        return f"{self.title} (€{self.price})"

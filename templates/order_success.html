@@ -1,9 +1,9 @@
 {% load static %}
 <!DOCTYPE html>
-<html lang="en">
+<html lang="de">
 <head>
   <meta charset="UTF-8">
-  <title>Order Confirmed – Omran Kebab</title>
+  <title>Bestellung bestätigt – Omran Kebab</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link href="{% static 'assets/vendor/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
   <link href="{% static 'assets/css/main.css' %}" rel="stylesheet">
@@ -13,19 +13,19 @@
 <div class="container my-5">
   <div class="card shadow-sm">
     <div class="card-body">
-      <h3 class="mb-2">✅ Order sent to restaurant!</h3>
-      <p class="mb-3">You chose <strong>Pay on pickup (Cash)</strong>.</p>
+      <h3 class="mb-2">✅ Bestellung zum Restaurant gesendet!</h3>
+      <p class="mb-3">Sie haben sich für <strong>Vor-Ort-Zahlung (Bargeld)</strong> entschieden.</p>
 
       <div class="alert alert-success">
-        <div><strong>Your order number:</strong></div>
+        <div><strong>Ihre Bestellnummer:</strong></div>
         <div class="fs-3 fw-bold">{{ order.order_number }}</div>
       </div>
 
       <div class="mb-3">
-        <strong>Current status:</strong> {{ order.get_status_display }}
+        <strong>Aktueller Status:</strong> {{ order.get_status_display }}
       </div>
 
-      <h5 class="mt-4">Items</h5>
+      <h5 class="mt-4">Artikel</h5>
       <ul class="list-group">
         {% for item in order.items.all %}
           <li class="list-group-item d-flex justify-content-between">
@@ -45,13 +45,13 @@
       </ul>
 
       <div class="d-flex justify-content-between mt-3">
-        <strong>Total</strong>
+        <strong>Gesamtpreis</strong>
         <strong>{{ order.total_price }} €</strong>
       </div>
 
       <div class="mt-4 d-flex gap-2">
-        <a class="btn btn-primary" href="{% url 'track_order' %}">Track order</a>
-        <a class="btn btn-outline-secondary" href="{% url 'home' %}">Back to menu</a>
+        <a class="btn btn-primary" href="{% url 'track_order' %}">Bestellung verfolgen</a>
+        <a class="btn btn-outline-secondary" href="{% url 'home' %}">Zurück zur Speisekarte</a>
       </div>
     </div>
   </div>

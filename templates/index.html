@@ -68,7 +68,7 @@
           <i class="bi bi-bag"></i>
           <span class="d-none d-md-inline ms-1">Warenkorb</span>
         </a>
-        <a class="btn-getstarted" href="book-a-table">Tisch reservieren</a>
+        <a class="btn-getstarted" href="#book-a-table">Tisch reservieren</a>
       </div>
 
     </div>
@@ -126,7 +126,7 @@
       <div class="container">
         <div class="row gy-4">
           <div class="col-lg-7" data-aos="fade-up" data-aos-delay="100">
-            <img src="{% static 'assets/img/about.jpg' %}" class="img-fluid mb-4" alt="">
+            <img src="{% static 'assets/img/Background_Video.webp' %}" class="img-fluid mb-4" alt="">
             <div class="book-a-table">
               <h3>Tisch reservieren</h3>
               <p>+49 151 40905653</p>
@@ -150,8 +150,8 @@
               </p>
 
               <div class="position-relative mt-4">
-                <img src="{% static 'assets/img/about-2.jpg' %}" class="img-fluid" alt="">
-                <a href="https://www.youtube.com/watch?v=Y7f98aduVJ8" class="glightbox pulsating-play-btn"></a>
+                <img src="{% static 'assets/img/restaurant.webp' %}" class="img-fluid" alt="">
+                <a href="{% static 'assets/videos/OmranKebab_DoenerTag.mp4' %}" class="glightbox pulsating-play-btn"></a>
               </div>
             </div>
           </div>
@@ -483,64 +483,13 @@
 
     </section>
     <!-- /Menu Section -->
-
-    <!-- Testimonials Section -->
-    <section id="testimonials" class="testimonials section light-background">
-      <div class="container section-title" data-aos="fade-up">
-        <h2>BEWERTUNGEN</h2>
-        <p>Was sagen unsere <span class="description-title">Gäste über uns</span></p>
-      </div>
-
-      <div class="container" data-aos="fade-up" data-aos-delay="100">
-        <div class="swiper init-swiper">
-          <script type="application/json" class="swiper-config">
-            {
-              "loop": true,
-              "speed": 600,
-              "autoplay": { "delay": 5000 },
-              "slidesPerView": "auto",
-              "pagination": {
-                "el": ".swiper-pagination",
-                "type": "bullets",
-                "clickable": true
-              }
-            }
-          </script>
-
-          <div class="swiper-wrapper">
-            <div class="swiper-slide">
-              <div class="testimonial-item">
-                <div class="row gy-4 justify-content-center">
-                  <div class="col-lg-6">
-                    <div class="testimonial-content">
-                      <p>
-                        <i class="bi bi-quote quote-icon-left"></i>
-                        <span>Proin iaculis purus consequat sem cure digni ssim donec porttitora entum suscipit rhoncus. Accusantium quam, ultricies eget id, aliquam eget nibh et.</span>
-                        <i class="bi bi-quote quote-icon-right"></i>
-                      </p>
-                      <h3>Saul Goodman</h3>
-                      <h4>Geschäftsführer &amp; Gründer</h4>
-                      <div class="stars">
-                        <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="col-lg-2 text-center">
-                    <img src="{% static 'assets/img/testimonials/testimonials-1.jpg' %}" class="img-fluid testimonial-img" alt="">
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="swiper-pagination"></div>
-        </div>
-      </div>
-    </section>
-    <!-- /Testimonials Section -->
-
     <!-- Events Section -->
-    <section id="events" class="events section">
+    <section id="events" class="events section light-background">
+      <div class="container section-title" data-aos="fade-up">
+        <h2>Events</h2>
+        <p><span>Entdecken Sie unsere</span> <span class="description-title">Events</span></p>
+      </div>
+
       <div class="container-fluid" data-aos="fade-up" data-aos-delay="100">
         <div class="swiper init-swiper">
           <script type="application/json" class="swiper-config">
@@ -562,17 +511,15 @@
           </script>
 
           <div class="swiper-wrapper">
-            <div class="swiper-slide event-item d-flex flex-column justify-content-end" style="background-image: url({% static 'assets/img/events-1.jpg' %})">
-              <h3>Individuelle Feiern</h3>
-              <div class="price align-self-start">€99</div>
-              <p class="description">Perfekt für kleine Feiern – wir gestalten Ihr Event nach Ihren Wünschen.</p>
+            {% for event in events %}
+            {% if event.is_active %}
+            <div class="swiper-slide event-item d-flex flex-column justify-content-end" style="background-image: url({{ event.image.url }})">
+              <h3>{{ event.title }}</h3>
+              <div class="price align-self-start">€{{ event.price|floatformat:0 }}</div>
+              <p class="description">{{ event.description }}</p>
             </div>
-
-            <div class="swiper-slide event-item d-flex flex-column justify-content-end" style="background-image: url({% static 'assets/img/events-2.jpg' %})">
-              <h3>Private Feiern</h3>
-              <div class="price align-self-start">€289</div>
-              <p class="description">Ob Familie oder Freunde – genießen Sie eine private Atmosphäre und gutes Essen.</p>
-            </div>
+            {% endif %}
+            {% endfor %}
           </div>
 
           <div class="swiper-pagination"></div>
@@ -684,12 +631,12 @@
 
     <!-- Contact Section -->
     <section id="contact" class="contact section">
-      <div class="container section-title" data-aos="fade-up">
+      <div class="container section-title">
         <h2>Kontakt</h2>
         <p><span>Brauchen Sie Hilfe?</span> <span class="description-title">Kontaktieren Sie uns</span></p>
       </div>
 
-      <div class="container" data-aos="fade-up" data-aos-delay="100">
+      <div class="container">
 
         <div class="mb-5">
           <iframe
@@ -704,7 +651,7 @@
         <div class="row gy-4">
 
           <div class="col-md-6">
-            <div class="info-item d-flex align-items-center" data-aos="fade-up" data-aos-delay="200">
+            <div class="info-item d-flex align-items-center">
               <i class="icon bi bi-geo-alt flex-shrink-0"></i>
               <div>
                 <h3>Adresse</h3>
@@ -714,7 +661,7 @@
           </div>
 
           <div class="col-md-6">
-            <div class="info-item d-flex align-items-center" data-aos="fade-up" data-aos-delay="300">
+            <div class="info-item d-flex align-items-center">
               <i class="icon bi bi-telephone flex-shrink-0"></i>
               <div>
                 <h3>Rufen Sie uns an</h3>
@@ -724,7 +671,7 @@
           </div>
 
           <div class="col-md-6">
-            <div class="info-item d-flex align-items-center" data-aos="fade-up" data-aos-delay="400">
+            <div class="info-item d-flex align-items-center">
               <i class="icon bi bi-envelope flex-shrink-0"></i>
               <div>
                 <h3>Schreiben Sie uns eine E-Mail</h3>
@@ -734,7 +681,7 @@
           </div>
 
           <div class="col-md-6">
-            <div class="info-item d-flex align-items-center" data-aos="fade-up" data-aos-delay="500">
+            <div class="info-item d-flex align-items-center">
               <i class="icon bi bi-clock flex-shrink-0"></i>
               <div>
                 <h3>Öffnungszeiten<br></h3>
@@ -744,35 +691,6 @@
           </div>
 
         </div>
-
-        <!-- NOTE: still template PHP. We can wire to Django later. -->
-        <form action="forms/contact.php" method="post" class="php-email-form" data-aos="fade-up" data-aos-delay="600">
-          <div class="row gy-4">
-            <div class="col-md-6">
-              <input type="text" name="name" class="form-control" placeholder="Ihr Name" required="">
-            </div>
-
-            <div class="col-md-6 ">
-              <input type="email" class="form-control" name="email" placeholder="Ihre E-Mail" required="">
-            </div>
-
-            <div class="col-md-12">
-              <input type="text" class="form-control" name="subject" placeholder="Betreff" required="">
-            </div>
-
-            <div class="col-md-12">
-              <textarea class="form-control" name="message" rows="6" placeholder="Nachricht" required=""></textarea>
-            </div>
-
-            <div class="col-md-12 text-center">
-              <div class="loading">Lädt…</div>
-              <div class="error-message"></div>
-              <div class="sent-message">Ihre Nachricht wurde gesendet. Vielen Dank!</div>
-              <button type="submit">Nachricht senden</button>
-            </div>
-          </div>
-        </form>
-
       </div>
     </section>
     <!-- /Contact Section -->
@@ -829,7 +747,6 @@
     <div class="container copyright text-center mt-4">
       <p>© <span>Copyright</span> <strong class="px-1 sitename">Omran Kebab</strong> <span>Alle Rechte vorbehalten.</span></p>
       <div class="credits">
-        Designed by <a href="https://bootstrapmade.com/">BootstrapMade</a> Distributed by <a href="https://themewagon.com">ThemeWagon</a>
       </div>
     </div>
   </footer>

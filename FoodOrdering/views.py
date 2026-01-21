@@ -14,12 +14,13 @@ from .forms import TableReservationForm
 
 from .models import (
     Product, Order, OrderItem, Category,
-    ProductOptionGroup, Option, OrderItemOption
+    ProductOptionGroup, Option, OrderItemOption,Event
 )
 
 
 def home(request):
     # Speed: prefetch everything needed for modals (products + option groups + options)
+    events = Event.objects.filter(is_active=True).order_by('sort_order')
     categories = (
         Category.objects.filter(is_active=True)
         .prefetch_related(
@@ -29,6 +30,7 @@ def home(request):
     )    
     return render(request, "index.html", {  
         "categories": categories,
+        'events': events,
         "reservation_form": TableReservationForm()
     })
 
@@ -398,7 +400,7 @@ def track_order(request):
         order_number = (request.POST.get("order_number") or "").strip()
         order = Order.objects.filter(order_number=order_number).first()
         if not order:
-            error = "Order number not found. Please check and try again."
+            error = "Bestellnummer nicht gefunden. Bitte prüfen Sie die Nummer und versuchen Sie es erneut."
 
     return render(request, "track_order.html", {"order": order, "error": error})
 
