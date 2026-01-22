@@ -151,9 +151,16 @@ def add_to_cart(request, product_id):
 
  # ✅ Return JSON for AJAX, otherwise redirect back to menu
     if request.headers.get("x-requested-with") == "XMLHttpRequest":
-        return JsonResponse({"ok": True, "message": "Zum Warenkorb hinzugefügt."})
+        return JsonResponse({"ok": True, "success": True, "message": "Zum Warenkorb hinzugefügt."})
 
     return redirect("home")
+
+
+def get_cart_count(request):
+    """Return the total number of items in the cart as JSON."""
+    cart = get_cart(request)
+    count = cart.items.count()  # Count number of OrderItems (not quantities)
+    return JsonResponse({"count": count})
 
 def cart_detail(request):
     cart = get_cart(request)
