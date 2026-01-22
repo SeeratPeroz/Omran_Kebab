@@ -7,10 +7,12 @@ from django.urls import reverse
 from django.utils import timezone
 from django.views.decorators.http import require_POST
 from django.contrib import messages
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
 from django.db import transaction
 from django.shortcuts import render, get_object_or_404, redirect
 from django.db.models import Prefetch
-from .forms import TableReservationForm
+from .forms import TableReservationForm, CustomAuthenticationForm
 
 from .models import (
     Product, Order, OrderItem, Category,
@@ -33,6 +35,54 @@ def home(request):
         'events': events,
         "reservation_form": TableReservationForm()
     })
+
+
+def login_page(request):
+    """Handle user login with Django authentication."""
+    if request.user.is_authenticated:
+        return redirect('admin')
+    
+    if request.method == 'POST':
+        form = CustomAuthenticationForm(request, data=request.POST)
+        if form.is_valid():
+            username = form.cleaned_data.get('username')
+            password = form.cleaned_data.get('password')
+            remember_me = form.cleaned_data.get('remember_me')
+            
+            user = authenticate(username=username, password=password)
+            if user is not None:
+                login(request, user)
+                
+                # Set session expiry based on remember_me
+                if not remember_me:
+                    request.session.set_expiry(0)  # Browser closes = logout
+                
+                return JsonResponse({
+                    'success': True,
+                    'message': 'Erfolgreich angemeldet!',
+                    'redirect': reverse('admin')
+                })
+        
+        return JsonResponse({
+            'success': False,
+            'message': 'Benutzername oder Passwort ungültig.'
+        })
+    
+    form = CustomAuthenticationForm()
+    return render(request, 'login.html', {'form': form})
+
+
+@login_required(login_url='login')
+def admin_panel(request):
+    """Render the admin panel (login required)."""
+    return render(request, 'admin.html')
+
+
+def logout_user(request):
+    """Handle user logout."""
+    logout(request)
+    messages.success(request, 'Sie wurden erfolgreich abgemeldet.')
+    return redirect('home')
 
 
 

@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="de">
+{% load static %}
+<head>
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+  <title>Anmelden - Omran Kebab</title>
+  <meta name="description" content="">
+  <meta name="keywords" content="">
+
+  <!-- Favicons -->
+  <link href="{% static 'assets/img/favicon.png' %}" rel="icon">
+  <link href="{% static 'assets/img/apple-touch-icon.png' %}" rel="apple-touch-icon">
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com" rel="preconnect">
+  <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&family=Inter:wght@100;200;300;400;500;600;700;800;900&family=Amatic+SC:wght@400;700&display=swap" rel="stylesheet">
+
+  <!-- Vendor CSS Files -->
+  <link href="{% static 'assets/vendor/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
+  <link href="{% static 'assets/vendor/bootstrap-icons/bootstrap-icons.css' %}" rel="stylesheet">
+
+  <!-- Main CSS File -->
+  <link href="{% static 'assets/css/main.css' %}" rel="stylesheet">
+  <link href="{% static 'assets/css/style.css' %}" rel="stylesheet">
+
+  <style>
+    body {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Roboto', sans-serif;
+    }
+
+    .login-container {
+      width: 100%;
+      max-width: 450px;
+      animation: slideUp 0.8s ease-out;
+    }
+
+    @keyframes slideUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .login-card {
+      background: white;
+      border-radius: 15px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      padding: 50px 40px;
+      animation: popIn 0.6s ease-out 0.2s both;
+    }
+
+    @keyframes popIn {
+      from {
+        opacity: 0;
+        transform: scale(0.95);
+      }
+      to {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+
+    .login-header {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+
+    .logo-circle {
+      width: 80px;
+      height: 80px;
+      background: linear-gradient(135deg, #ffc107 0%, #ff9800 100%);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 20px;
+      font-size: 40px;
+      color: white;
+      animation: bounce 2s infinite;
+    }
+
+    @keyframes bounce {
+      0%, 100% {
+        transform: translateY(0);
+      }
+      50% {
+        transform: translateY(-10px);
+      }
+    }
+
+    .login-header h2 {
+      font-size: 28px;
+      font-weight: 700;
+      color: #222;
+      margin-bottom: 10px;
+    }
+
+    .login-header p {
+      color: #666;
+      font-size: 14px;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-group label {
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 8px;
+      display: block;
+    }
+
+    .form-control {
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
+      padding: 12px 15px;
+      font-size: 14px;
+      transition: all 0.3s ease;
+    }
+
+    .form-control:focus {
+      border-color: #ffc107;
+      box-shadow: 0 0 0 0.2rem rgba(255, 193, 7, 0.15);
+      outline: none;
+    }
+
+    .form-control::placeholder {
+      color: #aaa;
+    }
+
+    .form-check {
+      margin-bottom: 20px;
+    }
+
+    .form-check-input {
+      border-color: #e0e0e0;
+      cursor: pointer;
+    }
+
+    .form-check-input:checked {
+      background-color: #ffc107;
+      border-color: #ffc107;
+    }
+
+    .form-check-input:focus {
+      border-color: #ffc107;
+      box-shadow: 0 0 0 0.2rem rgba(255, 193, 7, 0.25);
+    }
+
+    .form-check-label {
+      cursor: pointer;
+      color: #666;
+      font-size: 14px;
+      margin-left: 5px;
+    }
+
+    .forgotten-password {
+      text-align: right;
+      margin-bottom: 30px;
+    }
+
+    .forgotten-password a {
+      color: #ffc107;
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 600;
+      transition: color 0.3s ease;
+    }
+
+    .forgotten-password a:hover {
+      color: #ff9800;
+    }
+
+    .btn-login {
+      width: 100%;
+      padding: 12px;
+      background: linear-gradient(135deg, #ffc107 0%, #ff9800 100%);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 16px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn-login::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: rgba(255, 255, 255, 0.2);
+      transition: left 0.5s ease;
+    }
+
+    .btn-login:hover::before {
+      left: 100%;
+    }
+
+    .btn-login:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 20px rgba(255, 193, 7, 0.3);
+    }
+
+    .btn-login:active {
+      transform: translateY(0);
+    }
+
+    .login-footer {
+      text-align: center;
+      margin-top: 30px;
+      border-top: 1px solid #e0e0e0;
+      padding-top: 30px;
+    }
+
+    .login-footer p {
+      color: #666;
+      font-size: 14px;
+      margin-bottom: 10px;
+    }
+
+    .login-footer a {
+      color: #ffc107;
+      text-decoration: none;
+      font-weight: 600;
+      transition: color 0.3s ease;
+    }
+
+    .login-footer a:hover {
+      color: #ff9800;
+    }
+
+    .divider {
+      display: flex;
+      align-items: center;
+      margin: 30px 0;
+    }
+
+    .divider::before,
+    .divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: #e0e0e0;
+    }
+
+    .divider span {
+      margin: 0 15px;
+      color: #999;
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .social-login {
+      display: flex;
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+
+    .social-btn {
+      flex: 1;
+      padding: 10px;
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
+      background: white;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-size: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .social-btn:hover {
+      border-color: #ffc107;
+      background: #fff9e6;
+    }
+
+    .input-group-text {
+      border: 2px solid #e0e0e0;
+      background: white;
+      cursor: pointer;
+    }
+
+    .input-group:focus-within .input-group-text {
+      border-color: #ffc107;
+      color: #ffc107;
+    }
+
+    .error-message {
+      display: none;
+      background: #f8d7da;
+      color: #721c24;
+      padding: 12px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      border: 1px solid #f5c6cb;
+      animation: shake 0.5s ease-in-out;
+    }
+
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-5px); }
+      75% { transform: translateX(5px); }
+    }
+
+    .success-message {
+      display: none;
+      background: #d4edda;
+      color: #155724;
+      padding: 12px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      border: 1px solid #c3e6cb;
+    }
+
+    .back-home {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      color: white;
+      text-decoration: none;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      transition: all 0.3s ease;
+    }
+
+    .back-home:hover {
+      gap: 10px;
+    }
+
+    .back-home i {
+      font-size: 18px;
+    }
+
+    @media (max-width: 600px) {
+      .login-card {
+        padding: 40px 25px;
+      }
+
+      .login-header h2 {
+        font-size: 24px;
+      }
+
+      .logo-circle {
+        width: 70px;
+        height: 70px;
+        font-size: 35px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <a href="{% url 'home' %}" class="back-home">
+    <i class="bi bi-chevron-left"></i>
+    Zurück
+  </a>
+
+  <div class="login-container">
+    <div class="login-card">
+      <div class="login-header">
+        <div class="logo-circle">
+          <i class="bi bi-person-fill"></i>
+        </div>
+        <h2>Willkommen zurück</h2>
+        <p>Melden Sie sich an, um Ihre Bestellung zu verfolgen</p>
+      </div>
+
+      <div class="error-message" id="errorMessage"></div>
+      <div class="success-message" id="successMessage"></div>
+
+      <form id="loginForm" method="post">
+        {% csrf_token %}
+        
+        <div class="form-group">
+          <label for="id_username">Benutzername</label>
+          <div class="input-group">
+            {{ form.username }}
+            <span class="input-group-text">
+              <i class="bi bi-person"></i>
+            </span>
+          </div>
+          {% if form.username.errors %}
+            <small class="text-danger">{{ form.username.errors.0 }}</small>
+          {% endif %}
+        </div>
+
+        <div class="form-group">
+          <label for="id_password">Passwort</label>
+          <div class="input-group">
+            {{ form.password }}
+            <span class="input-group-text toggle-password" onclick="togglePassword()">
+              <i class="bi bi-eye" id="eyeIcon"></i>
+            </span>
+          </div>
+          {% if form.password.errors %}
+            <small class="text-danger">{{ form.password.errors.0 }}</small>
+          {% endif %}
+        </div>
+
+        <div class="form-check">
+          {{ form.remember_me }}
+          <label class="form-check-label" for="id_remember_me">
+            Angemeldet bleiben
+          </label>
+        </div>
+
+        <button type="submit" class="btn-login">Anmelden</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Vendor JS Files -->
+  <script src="{% static 'assets/vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+
+  <script>
+    function togglePassword() {
+      const passwordInput = document.getElementById('id_password');
+      const eyeIcon = document.getElementById('eyeIcon');
+      
+      if (passwordInput.type === 'password') {
+        passwordInput.type = 'text';
+        eyeIcon.className = 'bi bi-eye-slash';
+      } else {
+        passwordInput.type = 'password';
+        eyeIcon.className = 'bi bi-eye';
+      }
+    }
+
+    function showError(message) {
+      const errorDiv = document.getElementById('errorMessage');
+      errorDiv.textContent = message;
+      errorDiv.style.display = 'block';
+      setTimeout(() => {
+        errorDiv.style.display = 'none';
+      }, 5000);
+    }
+
+    function showSuccess(message) {
+      const successDiv = document.getElementById('successMessage');
+      successDiv.textContent = message;
+      successDiv.style.display = 'block';
+      setTimeout(() => {
+        successDiv.style.display = 'none';
+      }, 3000);
+    }
+
+    // Handle form submission with AJAX
+    document.getElementById('loginForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      const formData = new FormData(this);
+      const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+      fetch(window.location.pathname, {
+        method: 'POST',
+        headers: {
+          'X-CSRFToken': csrfToken,
+          'X-Requested-With': 'XMLHttpRequest'
+        },
+        body: formData
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          showSuccess('Erfolgreich angemeldet! Sie werden weitergeleitet...');
+          
+          setTimeout(() => {
+            window.location.href = data.redirect;
+          }, 1500);
+        } else {
+          showError(data.message || 'Anmeldung fehlgeschlagen');
+        }
+      })
+      .catch(error => {
+        showError('Ein Fehler ist aufgetreten. Bitte versuchen Sie es später erneut.');
+        console.error('Error:', error);
+      });
+    });
+
+    // Check if user is already logged in
+    window.addEventListener('load', () => {
+      // Let Django handle this via @login_required redirect
+    });
+  </script>
+</body>
+
+</html>

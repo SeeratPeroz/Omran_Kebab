@@ -7,6 +7,7 @@
   <title>Startseite - Omran Kebab</title>
   <meta name="description" content="">
   <meta name="keywords" content="">
+  {% csrf_token %}
 
   <!-- Favicons -->
   <link href="{% static 'assets/img/favicon.png' %}" rel="icon">
@@ -70,9 +71,24 @@
             0
           </span>
         </a>
-        <button class="btn btn-outline-dark rounded-circle avatar-btn" title="Anmelden">
-          <i class="bi bi-person-circle fs-5"></i>
-        </button>
+        <div class="position-relative">
+          <button class="btn btn-outline-dark rounded-circle avatar-btn" id="avatarBtn" title="Anmelden">
+            <i class="bi bi-person-circle fs-5"></i>
+          </button>
+          <!-- User Dropdown Menu -->
+          <div class="avatar-dropdown" id="avatarDropdown" style="display: none;">
+            <a href="#" class="dropdown-item" id="logoutBtn">
+              <i class="bi bi-box-arrow-right"></i> Abmelden
+            </a>
+            <a href="#" class="dropdown-item" id="adminBtn">
+              <i class="bi bi-speedometer2"></i> Admin Panel
+            </a>
+            <div class="dropdown-divider"></div>
+            <a href="#" class="dropdown-item user-email" id="userEmailDisplay">
+              <i class="bi bi-person"></i> <span id="emailSpan">Profil</span>
+            </a>
+          </div>
+        </div>
       </div>
 
     </div>
@@ -783,6 +799,78 @@
       align-items: center;
       justify-content: center;
     }
+
+    .avatar-dropdown {
+      position: absolute;
+      top: 100%;
+      right: 0;
+      background: white;
+      border: 1px solid #e0e0e0;
+      border-radius: 8px;
+      min-width: 200px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+      margin-top: 10px;
+      z-index: 1000;
+      animation: slideDownFade 0.3s ease-out;
+    }
+
+    @keyframes slideDownFade {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .avatar-dropdown .dropdown-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 16px;
+      color: #222;
+      text-decoration: none;
+      transition: all 0.3s ease;
+      border: none;
+      background: none;
+      width: 100%;
+      text-align: left;
+      cursor: pointer;
+    }
+
+    .avatar-dropdown .dropdown-item:first-child {
+      border-radius: 8px 8px 0 0;
+    }
+
+    .avatar-dropdown .dropdown-item:hover {
+      background-color: #f5f5f5;
+      color: #ffc107;
+      padding-left: 20px;
+    }
+
+    .avatar-dropdown .dropdown-item i {
+      width: 18px;
+      text-align: center;
+    }
+
+    .avatar-dropdown .dropdown-divider {
+      margin: 8px 0;
+      border-top: 1px solid #e0e0e0;
+    }
+
+    .avatar-dropdown .user-email {
+      color: #999;
+      font-size: 13px;
+      pointer-events: none;
+    }
+
+    .avatar-dropdown .user-email:hover {
+      background-color: white;
+      color: #999;
+      padding-left: 16px;
+    }
   </style>
 
   <!-- ✅ Dropdown menu styling -->
@@ -921,6 +1009,77 @@
       }
     });
   });
+
+  // ✅ Avatar Button - Login/Logout functionality
+  const avatarBtn = document.getElementById('avatarBtn');
+  const avatarDropdown = document.getElementById('avatarDropdown');
+  const logoutBtn = document.getElementById('logoutBtn');
+  const adminBtn = document.getElementById('adminBtn');
+
+  // Check login status on page load
+  function checkLoginStatus() {
+    // Check if user is authenticated (Django template tag: user.is_authenticated)
+    const isLoggedIn = {{ user.is_authenticated|lower }};
+    const username = '{{ user.username }}';
+    
+    if (isLoggedIn) {
+      // Show dropdown for logged-in user
+      document.getElementById('emailSpan').textContent = username;
+      avatarBtn.classList.add('logged-in');
+    } else {
+      // Reset for logout
+      document.getElementById('emailSpan').textContent = 'Profil';
+      avatarBtn.classList.remove('logged-in');
+    }
+  }
+
+  // Avatar button click handler
+  avatarBtn.addEventListener('click', function(e) {
+    e.stopPropagation();
+    const isLoggedIn = {{ user.is_authenticated|lower }};
+    
+    if (isLoggedIn) {
+      // Toggle dropdown for logged-in users
+      const isVisible = avatarDropdown.style.display === 'block';
+      avatarDropdown.style.display = isVisible ? 'none' : 'block';
+    } else {
+      // Redirect to login for non-logged-in users
+      window.location.href = '{% url "login" %}';
+    }
+  });
+
+  // Logout handler
+  logoutBtn.addEventListener('click', function(e) {
+    e.preventDefault();
+    // Create a form to post logout request
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = '{% url "logout" %}';
+    
+    const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]');
+    if (csrfToken) {
+      form.appendChild(csrfToken.cloneNode());
+    }
+    
+    document.body.appendChild(form);
+    form.submit();
+  });
+
+  // Admin panel handler
+  adminBtn.addEventListener('click', function(e) {
+    e.preventDefault();
+    window.location.href = '{% url "admin" %}';
+  });
+
+  // Close dropdown when clicking outside
+  document.addEventListener('click', function(e) {
+    if (!e.target.closest('.position-relative')) {
+      avatarDropdown.style.display = 'none';
+    }
+  });
+
+  // Initialize login status on page load
+  document.addEventListener('DOMContentLoaded', checkLoginStatus);
 
   // ✅ Handle add to cart with success message and cart count
   document.addEventListener("submit", function(e) {
