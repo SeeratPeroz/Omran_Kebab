@@ -52,23 +52,30 @@
       <nav id="navmenu" class="navmenu">
         <ul>
           <li><a href="#hero" class="active">Startseite<br></a></li>
-          <li><a href="#about">Über uns</a></li>
           <li><a href="#menu">Speisekarte</a></li>
           <li><a href="#events">Events</a></li>
           <li><a href="#gallery">Galerie</a></li>
           <li><a href="#contact">Kontakt</a></li>
-          <li><a href="{% url 'track_order' %}">Bestellung verfolgen</a></li>
+          <li class="dropdown"><a href="#">Bestell <i class="bi bi-chevron-down"></i></a>
+            <ul>
+              <li><a href="#menu">Bestell Jetzt</a></li>
+              <li><a href="#book-a-table">Tisch reservieren</a></li>
+              <li><a href="{% url 'track_order' %}">Bestellung verfolgen</a></li>
+            </ul>
+          </li>
         </ul>
         <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
       </nav>
 
-      <!-- ✅ Cart button + reservation -->
+      <!-- ✅ Cart button + Avatar Login -->
       <div class="d-flex align-items-center gap-2">
         <a href="{% url 'cart_detail' %}" class="btn btn-outline-dark position-relative">
           <i class="bi bi-bag"></i>
-          <span class="d-none d-md-inline ms-1">Warenkorb</span>
+          <span class="d-none d-md-inline ms-1"></span>
         </a>
-        <a class="btn-getstarted" href="#book-a-table">Tisch reservieren</a>
+        <button class="btn btn-outline-dark rounded-circle avatar-btn" title="Anmelden">
+          <i class="bi bi-person-circle fs-5"></i>
+        </button>
       </div>
 
     </div>
@@ -769,6 +776,80 @@
   <!-- Main JS File -->
   <script src="{% static 'assets/js/main.js' %}"></script>
 
+  <!-- ✅ Avatar Login Button Styling -->
+  <style>
+    .avatar-btn {
+      width: 40px;
+      height: 40px;
+      padding: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+  </style>
+
+  <!-- ✅ Dropdown menu styling -->
+  <style>
+    .navmenu ul li.dropdown {
+      position: relative;
+    }
+
+    .navmenu ul li.dropdown > a::after {
+      content: '';
+    }
+
+    .navmenu ul li.dropdown ul {
+      display: none;
+      position: absolute;
+      left: 0;
+      top: 100%;
+      background-color: #fff;
+      min-width: 200px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      border-radius: 4px;
+      flex-direction: column;
+      margin-top: 10px;
+    }
+
+    .navmenu ul li.dropdown ul li {
+      padding: 0;
+    }
+
+    .navmenu ul li.dropdown ul li a {
+      display: block;
+      padding: 12px 20px;
+      color: #222;
+      text-decoration: none;
+      font-size: 14px;
+      transition: 0.3s;
+      border: none;
+    }
+
+    .navmenu ul li.dropdown ul li a:hover {
+      color: #222;
+    }
+
+    .navmenu ul li.dropdown:hover > ul {
+      display: flex;
+    }
+  </style>
+
+  <!-- ✅ Book-a-table clickable styling -->
+  <style>
+    div.book-a-table {
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    div.book-a-table:hover {
+      background-color: #ffc107;
+      transform: translateY(-5px);
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+      border-radius: 8px;
+      padding: 20px;
+    }
+  </style>
+
   <!-- ✅ Modal: live total + qty +/- -->
   <script>
     function format2(n) {
@@ -833,6 +914,16 @@
 
     btn.remove(); // remove the button after showing
   }
+
+  // ✅ Make .book-a-table divs clickable and navigate to reservation section
+  document.querySelectorAll("div.book-a-table").forEach(el => {
+    el.addEventListener("click", function() {
+      const target = document.getElementById("book-a-table");
+      if (target) {
+        target.scrollIntoView({ behavior: "smooth" });
+      }
+    });
+  });
 </script>
   
 
