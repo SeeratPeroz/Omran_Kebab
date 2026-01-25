@@ -16,7 +16,8 @@ from .forms import TableReservationForm, CustomAuthenticationForm
 
 from .models import (
     Product, Order, OrderItem, Category,
-    ProductOptionGroup, Option, OrderItemOption,Event
+    ProductOptionGroup, Option, OrderItemOption, Event,
+    TableReservation
 )
 
 
@@ -74,8 +75,93 @@ def login_page(request):
 
 @login_required(login_url='login')
 def admin_panel(request):
-    """Render the admin panel (login required)."""
-    return render(request, 'admin.html')
+    """Render the admin panel with orders and reservations (login required)."""
+    # Fetch all orders (except CART status) ordered by newest first
+    orders = (
+        Order.objects
+        .exclude(status="CART")
+        .select_related("user")
+        .prefetch_related("items__product", "items__chosen_options__option__group")
+        .order_by("-created_at")
+    )
+    
+    # Fetch all reservations ordered by newest first
+    reservations = TableReservation.objects.order_by("-created_at")
+    
+    # Calculate stats
+    orders_count = orders.count()
+    placed_orders = orders.filter(status="PLACED").count()
+    preparing_orders = orders.filter(status="PREPARING").count()
+    completed_orders = orders.filter(status="COMPLETED").count()
+    
+    reservations_new = reservations.filter(status="new").count()
+    reservations_confirmed = reservations.filter(status="confirmed").count()
+    
+    total_revenue = sum(order.total_price() for order in orders.filter(is_paid=True))
+    
+    context = {
+        "orders": orders,
+        "reservations": reservations,
+        "orders_count": orders_count,
+        "placed_orders": placed_orders,
+        "preparing_orders": preparing_orders,
+        "completed_orders": completed_orders,
+        "reservations_new": reservations_new,
+        "reservations_confirmed": reservations_confirmed,
+        "total_revenue": total_revenue,
+    }
+    
+    return render(request, "admin.html", context)
+
+
+@login_required(login_url='login')
+@require_POST
+def update_order_status(request, order_id):
+    """Update order status via AJAX."""
+    order = get_object_or_404(Order, id=order_id)
+    new_status = request.POST.get("status")
+    
+    valid_statuses = [choice[0] for choice in Order.STATUS_CHOICES]
+    
+    if new_status not in valid_statuses:
+        return JsonResponse({"success": False, "error": "Invalid status"}, status=400)
+    
+    order.status = new_status
+    if new_status == "PLACED" and not order.placed_at:
+        order.placed_at = timezone.now()
+    order.save()
+    
+    return JsonResponse({
+        "success": True,
+        "message": f"Bestellung aktualisiert zu {new_status}",
+        "order_id": order.id,
+        "new_status": new_status,
+        "redirect": "/dashboard/"
+    })
+
+
+@login_required(login_url='login')
+@require_POST
+def update_reservation_status(request, reservation_id):
+    """Update reservation status via AJAX."""
+    reservation = get_object_or_404(TableReservation, id=reservation_id)
+    new_status = request.POST.get("status")
+    
+    valid_statuses = ["new", "confirmed", "cancelled"]
+    
+    if new_status not in valid_statuses:
+        return JsonResponse({"success": False, "error": "Invalid status"}, status=400)
+    
+    reservation.status = new_status
+    reservation.save()
+    
+    return JsonResponse({
+        "success": True,
+        "message": f"Reservierung aktualisiert zu {new_status}",
+        "reservation_id": reservation.id,
+        "new_status": new_status,
+        "redirect": "/dashboard/"
+    })
 
 
 def logout_user(request):

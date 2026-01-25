@@ -6,7 +6,9 @@ urlpatterns = [
     path('', views.home, name='home'),
     path('login/', views.login_page, name='login'),
     path('logout/', views.logout_user, name='logout'),
-    path('admin/', views.admin_panel, name='admin'),
+    path('dashboard/', views.admin_panel, name='admin'),
+    path('dashboard/order/<int:order_id>/status/', views.update_order_status, name='update_order_status'),
+    path('dashboard/reservation/<int:reservation_id>/status/', views.update_reservation_status, name='update_reservation_status'),
 
     # Menu / Categories / Products
     #path('menu/', views.menu, name='menu'),
@@ -33,8 +35,4 @@ urlpatterns = [
 
 # Reservation
     path("reservation/create/", views.create_reservation, name="create_reservation"),
-
-
-
-
 ]
