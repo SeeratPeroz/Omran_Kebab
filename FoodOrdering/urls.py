@@ -9,6 +9,8 @@ urlpatterns = [
     path('dashboard/', views.admin_panel, name='admin'),
     path('dashboard/order/<int:order_id>/status/', views.update_order_status, name='update_order_status'),
     path('dashboard/reservation/<int:reservation_id>/status/', views.update_reservation_status, name='update_reservation_status'),
+    path('kitchen/', views.kitchen_view, name='kitchen_view'),
+    path('kitchen/poll/', views.kitchen_poll, name='kitchen_poll'),
 
     # Menu / Categories / Products
     #path('menu/', views.menu, name='menu'),

@@ -1,0 +1,1038 @@
+<!DOCTYPE html>
+<html lang="de">
+{% load static %}
+<head>
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+  <title>Kuechenansicht - Omran Kebab</title>
+
+  <link href="https://fonts.googleapis.com" rel="preconnect">
+  <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <link href="{% static 'assets/vendor/bootstrap-icons/bootstrap-icons.css' %}" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg: #f6f3ee;
+      --ink: #1f1f1f;
+      --muted: #666;
+      --card: #ffffff;
+      --accent: #ffb000;
+      --accent-strong: #ff8a00;
+      --ok: #1b7f5a;
+      --warn: #c76a00;
+      --danger: #c0392b;
+      --line: #ece6dc;
+      --new-bg: #fff4e6;
+      --new-border: #ff8a00;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: "Space Grotesk", sans-serif;
+      background: radial-gradient(1200px 800px at 10% -10%, #fff7e1 0%, transparent 60%),
+                  radial-gradient(1200px 800px at 100% 0%, #fff1d6 0%, transparent 55%),
+                  var(--bg);
+      color: var(--ink);
+      min-height: 100vh;
+    }
+
+    .page {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 24px 20px 40px;
+    }
+
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 18px;
+      flex-wrap: wrap;
+    }
+
+    .title {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .title .badge {
+      width: 46px;
+      height: 46px;
+      border-radius: 12px;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(135deg, var(--accent) 0%, var(--accent-strong) 100%);
+      color: #000;
+      font-size: 22px;
+      box-shadow: 0 8px 18px rgba(255, 138, 0, 0.25);
+    }
+
+    .title h1 {
+      font-size: 28px;
+      font-weight: 700;
+      letter-spacing: -0.3px;
+    }
+
+    .toolbar {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .search-wrap {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 8px;
+      flex: 1;
+      min-width: 200px;
+    }
+
+    .search-wrap input {
+      width: 100%;
+      max-width: 360px;
+      padding: 10px 12px;
+      border-radius: 10px;
+      border: 1px solid var(--line);
+      font-size: 14px;
+    }
+
+    .btn {
+      border: 0;
+      padding: 10px 14px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 14px;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.08);
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      color: #000;
+    }
+
+    .btn-outline {
+      background: transparent;
+      border: 1px solid var(--line);
+      color: var(--ink);
+    }
+
+    .status-chip {
+      padding: 6px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 600;
+      background: #fff3d6;
+      color: #7a4d00;
+    }
+
+    /* Section styling */
+    .section {
+      margin-bottom: 24px;
+    }
+
+    .section-title {
+      font-size: 18px;
+      font-weight: 700;
+      padding: 16px 20px;
+      background: linear-gradient(180deg, #ffffff 0%, #fff9ef 100%);
+      border-radius: 12px 12px 0 0;
+      border-bottom: 2px solid var(--line);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .section-title.new-section {
+      background: linear-gradient(180deg, #fff4e6 0%, #fff9ef 100%);
+      border-bottom-color: var(--new-border);
+    }
+
+    .new-order-count {
+      background: var(--danger);
+      color: white;
+      border-radius: 999px;
+      padding: 2px 8px;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    /* New Orders Card Grid */
+    .new-orders-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 16px;
+      padding: 20px;
+      background: var(--card);
+      border-radius: 0 0 12px 12px;
+      border: 1px solid var(--line);
+      border-top: 0;
+      min-height: 120px;
+    }
+
+    .order-card {
+      border: 3px solid var(--new-border);
+      border-radius: 12px;
+      padding: 16px;
+      background: var(--new-bg);
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 8px 20px rgba(255, 138, 0, 0.15);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .order-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 28px rgba(255, 138, 0, 0.25);
+    }
+
+    .order-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, var(--accent), var(--new-border));
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    .card-badge {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      background: var(--danger);
+      color: white;
+      padding: 4px 8px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+      animation: pulse 1.5s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.6; }
+    }
+
+    .card-order-number {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--ink);
+      margin-bottom: 8px;
+      padding-right: 40px;
+    }
+
+    .card-customer {
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .card-phone {
+      font-size: 12px;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+
+    .payment-wrap {
+      margin-bottom: 12px;
+    }
+
+    .payment-pill {
+      display: inline-flex;
+      align-items: center;
+      border-radius: 999px;
+      padding: 4px 10px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.2px;
+      text-transform: uppercase;
+    }
+
+    .payment-paid {
+      background: #e6f7ef;
+      color: #176b4b;
+      border: 1px solid #b5e5cf;
+    }
+
+    .payment-due {
+      background: #fff1dc;
+      color: #8b4e00;
+      border: 1px solid #ffd8a3;
+    }
+
+    .payment-unknown {
+      background: #f3f4f6;
+      color: #4b5563;
+      border: 1px solid #d1d5db;
+    }
+
+    .card-items {
+      font-size: 13px;
+      color: var(--ink);
+      margin-bottom: 12px;
+      line-height: 1.4;
+    }
+
+    .card-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-top: 12px;
+      border-top: 1px solid rgba(255, 138, 0, 0.2);
+    }
+
+    .card-price {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--new-border);
+    }
+
+    .card-actions {
+      display: flex;
+      gap: 6px;
+    }
+
+    .card-action-btn {
+      border: 0;
+      padding: 6px 10px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.2s ease;
+    }
+
+    .card-action-btn:hover {
+      transform: translateY(-1px);
+    }
+
+    .card-action-btn.preparing {
+      background: #fff1dc;
+      color: #8b4e00;
+    }
+
+    .card-action-btn.completed {
+      background: #e6f7ef;
+      color: var(--ok);
+    }
+
+    .empty-new {
+      padding: 40px 20px;
+      text-align: center;
+      color: var(--muted);
+      background: var(--card);
+      border-radius: 0 0 12px 12px;
+      border: 1px solid var(--line);
+      border-top: 0;
+      font-size: 14px;
+    }
+
+    /* Table sections */
+    .card {
+      background: var(--card);
+      border-radius: 12px;
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.06);
+      border: 1px solid var(--line);
+      overflow: hidden;
+    }
+
+    .card-header {
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      background: linear-gradient(180deg, #ffffff 0%, #fff9ef 100%);
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .card-header:hover {
+      background: linear-gradient(180deg, #fffbf5 0%, #fffbf5 100%);
+    }
+
+    .card-header h2 {
+      font-size: 18px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .collapse-icon {
+      display: inline-flex;
+      transition: transform 0.3s ease;
+    }
+
+    .collapse-icon.collapsed {
+      transform: rotate(-90deg);
+    }
+
+    .collapsible-content {
+      max-height: 1000px;
+      overflow: hidden;
+      transition: max-height 0.3s ease;
+    }
+
+    .collapsible-content.collapsed {
+      max-height: 0;
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 780px;
+    }
+
+    th, td {
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--line);
+      text-align: left;
+      vertical-align: top;
+    }
+
+    th {
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: #6b6b6b;
+      background: #faf7f1;
+    }
+
+    td {
+      font-size: 14px;
+    }
+
+    .muted {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .status {
+      display: inline-flex;
+      align-items: center;
+      padding: 6px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+    }
+
+    .status-placed { background: #e7f1ff; color: #1f5da9; }
+    .status-preparing { background: #fff1dc; color: #8b4e00; }
+    .status-completed { background: #e6f7ef; color: #1b7f5a; }
+    .status-cancelled { background: #fdecea; color: #b42318; }
+
+    .items {
+      list-style: none;
+      padding: 0;
+      margin: 6px 0 0;
+      color: #4b4b4b;
+    }
+
+    .items li {
+      margin-bottom: 4px;
+    }
+
+    .actions {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .action-btn {
+      border: 0;
+      padding: 6px 10px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .action-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.12);
+    }
+
+    .btn-preparing { background: #fff1dc; color: #8b4e00; }
+    .btn-completed { background: #e6f7ef; color: var(--ok); }
+    .btn-cancelled { background: #fdecea; color: var(--danger); }
+
+    .empty {
+      text-align: center;
+      padding: 40px 16px;
+      color: var(--muted);
+    }
+
+    .toast {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      padding: 12px 16px;
+      border-radius: 10px;
+      font-weight: 600;
+      color: #fff;
+      z-index: 2000;
+      animation: slideIn 0.3s ease-out;
+    }
+
+    .toast.success { background: var(--ok); }
+    .toast.warn { background: var(--warn); }
+
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (max-width: 1000px) {
+      .new-orders-grid {
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      }
+    }
+
+    @media (max-width: 800px) {
+      header {
+        align-items: flex-start;
+      }
+
+      .title h1 {
+        font-size: 22px;
+      }
+
+      .search-wrap {
+        width: 100%;
+      }
+
+      .new-orders-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .toolbar {
+        width: 100%;
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header>
+      <div class="title">
+        <div class="badge"><i class="bi bi-egg-fried"></i></div>
+        <div>
+          <h1>Kuechenansicht</h1>
+          <div class="muted">Live Uebersicht fuer Bestellungen</div>
+        </div>
+      </div>
+      <div class="toolbar">
+        <span class="status-chip" id="soundStatus">Sound: An</span>
+        <button class="btn btn-primary" id="enableSoundBtn" type="button">Sound freischalten</button>
+        <a class="btn btn-outline" href="{% url 'admin' %}"><i class="bi bi-arrow-left"></i> Dashboard</a>
+        <button class="btn btn-outline" type="button" onclick="location.reload()">Neu laden</button>
+      </div>
+      <div class="search-wrap">
+        <i class="bi bi-search"></i>
+        <input id="orderSearch" type="search" placeholder="Bestellung suchen (Nummer, Name, Telefon)" oninput="filterOrders()">
+      </div>
+    </header>
+
+    <!-- NEW ORDERS SECTION -->
+    <section class="section">
+      <div class="section-title new-section">
+        <span>🔔 Neue Bestellungen</span>
+        <span id="newOrderCount" class="new-order-count" style="display: none;">0</span>
+      </div>
+      <div id="newOrdersContainer" class="new-orders-grid">
+        <!-- New orders (PLACED) will be rendered here as cards -->
+      </div>
+      <div id="emptyNewOrders" class="empty-new">
+        Keine neuen Bestellungen. Alles ruhig!
+      </div>
+    </section>
+
+    <!-- IN PROGRESS SECTION -->
+    <section class="section">
+      <div class="card card-collapsible">
+        <div class="card-header" onclick="toggleSection('inProgress')">
+          <h2>
+            <i class="bi bi-list-check collapse-icon" id="inProgressIcon"></i>
+            Bestellungen in Vorbereitung
+          </h2>
+          <div class="muted" id="lastUpdate">Letztes Update: -</div>
+        </div>
+        <div id="inProgressContent" class="collapsible-content">
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Bestellnummer</th>
+                  <th>Kunde</th>
+                  <th>Artikel</th>
+                  <th>Betrag</th>
+                  <th>Status</th>
+                  <th>Zeit</th>
+                  <th>Aktionen</th>
+                </tr>
+              </thead>
+              <tbody id="inProgressTable">
+                <!-- In-progress orders (PREPARING) will be rendered here -->
+              </tbody>
+            </table>
+            <div id="emptyInProgress" class="empty" style="margin: 40px 0; display: none;">
+              Keine Bestellungen in Vorbereitung.
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- COMPLETED SECTION (collapsible, hidden by default) -->
+    <section class="section">
+      <div class="card card-collapsible">
+        <div class="card-header" onclick="toggleSection('completed')">
+          <h2>
+            <i class="bi bi-check-circle collapse-icon collapsed" id="completedIcon"></i>
+            Fertige Bestellungen
+          </h2>
+        </div>
+        <div id="completedContent" class="collapsible-content collapsed">
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Bestellnummer</th>
+                  <th>Kunde</th>
+                  <th>Artikel</th>
+                  <th>Betrag</th>
+                  <th>Status</th>
+                  <th>Zeit</th>
+                  <th>Aktionen</th>
+                </tr>
+              </thead>
+              <tbody id="completedTable">
+                <!-- Completed orders will be rendered here -->
+              </tbody>
+            </table>
+            <div id="emptyCompleted" class="empty" style="margin: 40px 0; display: none;">
+              Keine fertige Bestellungen.
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    let audioContext = null;
+    let soundEnabled = true;
+    const knownOrders = {};
+    const soundGain = 0.7;
+    let latestKnownCreatedAt = null;
+    let baselineReady = false;
+    let allOrdersData = {};
+
+    function initKnownOrders() {
+      const initialOrders = JSON.parse('{{ initial_orders_json|escapejs }}');
+      renderOrders(initialOrders);
+
+      initialOrders.forEach(order => {
+        const orderId = String(order.id);
+        knownOrders[orderId] = order.status;
+        if (order.created_at) {
+          const createdDate = new Date(order.created_at);
+          if (!latestKnownCreatedAt || createdDate > latestKnownCreatedAt) {
+            latestKnownCreatedAt = createdDate;
+          }
+        }
+      });
+    }
+
+    function setSoundStatus(enabled) {
+      const statusEl = document.getElementById('soundStatus');
+      statusEl.textContent = enabled ? 'Sound: An' : 'Sound: Aus';
+    }
+
+    function enableSound() {
+      if (!audioContext) {
+        audioContext = new (window.AudioContext || window.webkitAudioContext)();
+      }
+      if (audioContext.state === 'suspended') {
+        audioContext.resume();
+      }
+      soundEnabled = true;
+      setSoundStatus(true);
+    }
+
+    function playToneSequence(steps) {
+      if (!soundEnabled || !audioContext) return;
+      const now = audioContext.currentTime;
+      steps.reduce((offset, step) => {
+        const osc = audioContext.createOscillator();
+        const gain = audioContext.createGain();
+        osc.type = step.type || 'sawtooth';
+        osc.frequency.value = step.freq;
+        gain.gain.value = 0.0001;
+        osc.connect(gain);
+        gain.connect(audioContext.destination);
+        const start = now + offset;
+        const end = start + step.duration;
+        gain.gain.exponentialRampToValueAtTime(soundGain, start + 0.02);
+        gain.gain.exponentialRampToValueAtTime(0.0001, end);
+        osc.start(start);
+        osc.stop(end + 0.05);
+        return offset + step.duration + (step.pause || 0.05);
+      }, 0);
+    }
+
+    function playNewOrderTone() {
+      playToneSequence([
+        { freq: 900, duration: 0.4, pause: 0.1 },
+        { freq: 1100, duration: 0.5, pause: 0.1 },
+        { freq: 1400, duration: 0.5, pause: 0.15 },
+        { freq: 900, duration: 0.4, pause: 0.1 },
+        { freq: 1100, duration: 0.5, pause: 0.1 },
+        { freq: 1400, duration: 0.5 }
+      ]);
+    }
+
+    function toggleSection(section) {
+      const content = document.getElementById(section + 'Content');
+      const icon = document.getElementById(section + 'Icon');
+      content.classList.toggle('collapsed');
+      icon.classList.toggle('collapsed');
+    }
+
+    function getPaymentBadge(order) {
+      const method = (order.payment_method || '').toUpperCase();
+
+      if (order.is_paid && method === 'STRIPE') {
+        return { text: 'Online bezahlt', className: 'payment-paid' };
+      }
+      if (order.is_paid && method === 'CASH') {
+        return { text: 'Im Restaurant bezahlt', className: 'payment-paid' };
+      }
+      if (!order.is_paid && method === 'CASH') {
+        return { text: 'Im Restaurant zahlen', className: 'payment-due' };
+      }
+      if (!order.is_paid && method === 'STRIPE') {
+        return { text: 'Online offen', className: 'payment-due' };
+      }
+      if (order.is_paid) {
+        return { text: 'Bezahlt', className: 'payment-paid' };
+      }
+
+      return { text: 'Zahlung offen', className: 'payment-unknown' };
+    }
+
+    function createOrderCard(order) {
+      const payment = getPaymentBadge(order);
+      const itemsText = (order.items || []).map(item => {
+        let text = `${item.quantity}x ${item.product.name}`;
+        if (item.chosen_options && item.chosen_options.length > 0) {
+          text += ` (${item.chosen_options.map(o => o.option.name).join(', ')})`;
+        }
+        return text;
+      }).join('<br>');
+
+      return `
+        <div class="order-card" data-order-id="${order.id}" data-status="${order.status}">
+          <div class="card-badge">NEU!</div>
+          <div class="card-order-number">${order.order_number}</div>
+          <div class="card-customer">${order.full_name}</div>
+          <div class="card-phone">📱 ${order.phone}</div>
+          <div class="payment-wrap">
+            <span class="payment-pill ${payment.className}">${payment.text}</span>
+          </div>
+          <div class="card-items">${itemsText || 'Keine Artikel'}</div>
+          <div class="card-footer">
+            <div class="card-price">€${parseFloat(order.total_price).toFixed(2)}</div>
+            <div class="card-actions">
+              <button class="card-action-btn preparing" onclick="updateOrderStatus(${order.id}, 'PREPARING')">Vorbereitung</button>
+              <button class="card-action-btn completed" onclick="updateOrderStatus(${order.id}, 'COMPLETED')">Fertig</button>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function createTableRow(order) {
+      const payment = getPaymentBadge(order);
+      const itemsHtml = (order.items || []).map(item => {
+        let html = `${item.quantity}x ${item.product.name}`;
+        if (item.chosen_options && item.chosen_options.length > 0) {
+          html += `<div class="muted">${item.chosen_options.map(o => `${o.option.group.name}: ${o.option.name}`).join('<br>')}</div>`;
+        }
+        return html;
+      }).join('');
+
+      return `
+        <tr data-order-id="${order.id}" data-status="${order.status}">
+          <td>
+            <strong>${order.order_number}</strong>
+            <div class="muted">
+              <span class="payment-pill ${payment.className}">${payment.text}</span>
+            </div>
+          </td>
+          <td>
+            <strong>${order.full_name}</strong>
+            <div class="muted">${order.phone}</div>
+          </td>
+          <td>
+            <ul class="items">${itemsHtml || '<li>Keine Artikel</li>'}</ul>
+          </td>
+          <td><strong>€${parseFloat(order.total_price).toFixed(2)}</strong></td>
+          <td><span class="status status-${order.status.toLowerCase()}">${order.status_display || order.status}</span></td>
+          <td class="muted">${new Date(order.created_at).toLocaleString('de-DE')}</td>
+          <td>
+            <div class="actions">
+              ${order.status !== "PREPARING" ? `<button class="action-btn btn-preparing" onclick="updateOrderStatus(${order.id}, 'PREPARING')">Vorbereitung</button>` : ''}
+              ${order.status !== "COMPLETED" ? `<button class="action-btn btn-completed" onclick="updateOrderStatus(${order.id}, 'COMPLETED')">Fertig</button>` : ''}
+              ${order.status !== "CANCELLED" ? `<button class="action-btn btn-cancelled" onclick="updateOrderStatus(${order.id}, 'CANCELLED')">Stornieren</button>` : ''}
+            </div>
+          </td>
+        </tr>
+      `;
+    }
+
+    function renderOrders(orders) {
+      allOrdersData = {};
+      const newOrders = [];
+      const inProgressOrders = [];
+      const completedOrders = [];
+
+      orders.forEach(order => {
+        allOrdersData[order.id] = order;
+        if (order.status === 'PLACED') {
+          newOrders.push(order);
+        } else if (['PREPARING', 'DELIVERING'].includes(order.status)) {
+          inProgressOrders.push(order);
+        } else if (order.status === 'COMPLETED') {
+          completedOrders.push(order);
+        }
+      });
+
+      // Render new orders as cards
+      const newContainer = document.getElementById('newOrdersContainer');
+      const emptyNew = document.getElementById('emptyNewOrders');
+      const newCount = document.getElementById('newOrderCount');
+
+      if (newOrders.length > 0) {
+        newContainer.innerHTML = newOrders.map(order => createOrderCard(order)).join('');
+        newContainer.style.display = 'grid';
+        emptyNew.style.display = 'none';
+        newCount.textContent = newOrders.length;
+        newCount.style.display = 'inline-block';
+      } else {
+        newContainer.innerHTML = '';
+        newContainer.style.display = 'none';
+        emptyNew.style.display = 'block';
+        newCount.style.display = 'none';
+      }
+
+      // Render in-progress orders in table
+      const inProgressTable = document.getElementById('inProgressTable');
+      const emptyInProgress = document.getElementById('emptyInProgress');
+      if (inProgressOrders.length > 0) {
+        inProgressTable.innerHTML = inProgressOrders.map(order => createTableRow(order)).join('');
+        emptyInProgress.style.display = 'none';
+      } else {
+        inProgressTable.innerHTML = '';
+        emptyInProgress.style.display = 'block';
+      }
+
+      // Render completed orders in table
+      const completedTable = document.getElementById('completedTable');
+      const emptyCompleted = document.getElementById('emptyCompleted');
+      if (completedOrders.length > 0) {
+        completedTable.innerHTML = completedOrders.map(order => createTableRow(order)).join('');
+        emptyCompleted.style.display = 'none';
+      } else {
+        completedTable.innerHTML = '';
+        emptyCompleted.style.display = 'block';
+      }
+    }
+
+    function filterOrders() {
+      const query = document.getElementById('orderSearch')?.value.toLowerCase() || '';
+      
+      if (!query) {
+        // Show all
+        document.querySelectorAll('[data-order-id]').forEach(el => el.style.display = '');
+        return;
+      }
+
+      let found = 0;
+      document.querySelectorAll('[data-order-id]').forEach(el => {
+        const text = el.textContent.toLowerCase();
+        if (text.includes(query)) {
+          el.style.display = '';
+          found++;
+        } else {
+          el.style.display = 'none';
+        }
+      });
+
+      if (found === 0) {
+        showToast('Keine Bestellungen gefunden', 'warn');
+      }
+    }
+
+    function showToast(message, type) {
+      const toast = document.createElement('div');
+      toast.className = `toast ${type}`;
+      toast.textContent = message;
+      document.body.appendChild(toast);
+      setTimeout(() => toast.remove(), 3000);
+    }
+
+    function updateOrderRow(orderId, newStatus) {
+      const rows = document.querySelectorAll(`[data-order-id="${orderId}"]`);
+      rows.forEach(row => {
+        row.setAttribute('data-status', newStatus);
+        const statusEl = row.querySelector('.status');
+        if (statusEl) {
+          statusEl.className = `status status-${newStatus.toLowerCase()}`;
+          statusEl.textContent = newStatus;
+        }
+      });
+      
+      if (allOrdersData[orderId]) {
+        allOrdersData[orderId].status = newStatus;
+      }
+    }
+
+    function updateOrderStatus(orderId, newStatus) {
+      const confirmed = confirm(`Status auf "${newStatus}" setzen?`);
+      if (!confirmed) return;
+
+      const formData = new FormData();
+      formData.append('status', newStatus);
+      formData.append('csrfmiddlewaretoken', getCookie('csrftoken'));
+
+      fetch(`/dashboard/order/${orderId}/status/`, {
+        method: 'POST',
+        body: formData,
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          updateOrderRow(orderId, newStatus);
+          showToast('Bestellung aktualisiert', 'success');
+          // Re-render to move order to correct section
+          const ordersArray = Object.values(allOrdersData);
+          renderOrders(ordersArray);
+        } else {
+          showToast('Fehler beim Aktualisieren', 'warn');
+        }
+      })
+      .catch(() => showToast('Fehler beim Aktualisieren', 'warn'));
+    }
+
+    function getCookie(name) {
+      let cookieValue = null;
+      if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+          const cookie = cookies[i].trim();
+          if (cookie.substring(0, name.length + 1) === (name + '=')) {
+            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+            break;
+          }
+        }
+      }
+      return cookieValue;
+    }
+
+    async function pollOrders() {
+      try {
+        const res = await fetch("{% url 'kitchen_poll' %}", { cache: 'no-store' });
+        if (!res.ok) return;
+        const data = await res.json();
+        renderOrders(data.orders || []);
+        const now = new Date();
+        const updateEl = document.getElementById('lastUpdate');
+        updateEl.textContent = `Letztes Update: ${now.toLocaleTimeString('de-DE')}`;
+
+        let refreshNeeded = false;
+        let newestInPoll = latestKnownCreatedAt;
+        let hasNewOrder = false;
+
+        (data.orders || []).forEach(order => {
+          const orderId = String(order.id);
+          const knownStatus = knownOrders[orderId];
+          const createdDate = order.created_at ? new Date(order.created_at) : null;
+
+          if (createdDate && (!newestInPoll || createdDate > newestInPoll)) {
+            newestInPoll = createdDate;
+          }
+
+          if (createdDate && latestKnownCreatedAt && createdDate > latestKnownCreatedAt && order.status !== 'CANCELLED') {
+            hasNewOrder = true;
+          }
+
+          if (knownStatus !== order.status) {
+            knownOrders[orderId] = order.status;
+          }
+        });
+
+        if (!baselineReady) {
+          latestKnownCreatedAt = newestInPoll || latestKnownCreatedAt;
+          baselineReady = true;
+          return;
+        }
+
+        if (newestInPoll && (!latestKnownCreatedAt || newestInPoll > latestKnownCreatedAt)) {
+          latestKnownCreatedAt = newestInPoll;
+        }
+
+        if (hasNewOrder) {
+          playNewOrderTone();
+          showToast('Neue Bestellung eingetroffen', 'success');
+          refreshNeeded = true;
+        }
+
+        if (refreshNeeded) {
+          showToast('Anzeige aktualisiert', 'success');
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    document.getElementById('enableSoundBtn').addEventListener('click', enableSound);
+
+    initKnownOrders();
+    setSoundStatus(true);
+    enableSound();
+    pollOrders();
+    setInterval(pollOrders, 10000);
+  </script>
+</body>
+</html>

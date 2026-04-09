@@ -1,3 +1,4 @@
+import json
 from decimal import Decimal
 import stripe
 from django.views.decorators.csrf import csrf_exempt
@@ -11,7 +12,8 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.db import transaction
 from django.shortcuts import render, get_object_or_404, redirect
-from django.db.models import Prefetch
+from django.db.models import Prefetch, Case, When, Value, IntegerField
+from django.core.paginator import Paginator
 from .forms import TableReservationForm, CustomAuthenticationForm
 
 from .models import (
@@ -19,6 +21,50 @@ from .models import (
     ProductOptionGroup, Option, OrderItemOption, Event,
     TableReservation
 )
+
+
+def _serialize_kitchen_orders(orders):
+    """Serialize orders to the JSON structure needed by the kitchen UI."""
+    payload = []
+    for order in orders:
+        items_payload = []
+        for item in order.items.all():
+            chosen_options_payload = []
+            for chosen in item.chosen_options.all():
+                chosen_options_payload.append(
+                    {
+                        "option": {
+                            "name": chosen.option.name,
+                            "group": {"name": chosen.option.group.name},
+                        }
+                    }
+                )
+
+            items_payload.append(
+                {
+                    "quantity": item.quantity,
+                    "product": {"name": item.product.name},
+                    "chosen_options": chosen_options_payload,
+                }
+            )
+
+        payload.append(
+            {
+                "id": order.id,
+                "status": order.status,
+                "status_display": order.get_status_display(),
+                "order_number": order.order_number or "",
+                "full_name": order.full_name or "",
+                "phone": order.phone or "",
+                "payment_method": order.payment_method or "",
+                "is_paid": order.is_paid,
+                "total_price": str(order.total_price()),
+                "created_at": order.created_at.isoformat(),
+                "items": items_payload,
+            }
+        )
+
+    return payload
 
 
 def home(request):
@@ -82,7 +128,14 @@ def admin_panel(request):
         .exclude(status="CART")
         .select_related("user")
         .prefetch_related("items__product", "items__chosen_options__option__group")
-        .order_by("-created_at")
+        .annotate(
+            status_rank=Case(
+                When(status="COMPLETED", then=Value(1)),
+                default=Value(0),
+                output_field=IntegerField(),
+            )
+        )
+        .order_by("status_rank", "-created_at")
     )
     
     # Fetch all reservations ordered by newest first
@@ -112,6 +165,57 @@ def admin_panel(request):
     }
     
     return render(request, "admin.html", context)
+
+
+@login_required(login_url='login')
+def kitchen_view(request):
+    """Simple kitchen view for tablets (login required)."""
+    orders = (
+        Order.objects
+        .exclude(status="CART")
+        .select_related("user")
+        .prefetch_related("items__product", "items__chosen_options__option__group")
+        .annotate(
+            status_rank=Case(
+                When(status="COMPLETED", then=Value(1)),
+                default=Value(0),
+                output_field=IntegerField(),
+            )
+        )
+        .order_by("status_rank", "-created_at")
+    )
+
+    paginator = Paginator(orders, 10)
+    page_number = request.GET.get("page")
+    page_obj = paginator.get_page(page_number)
+
+    initial_orders_json = json.dumps(_serialize_kitchen_orders(page_obj.object_list))
+
+    return render(
+        request,
+        "kitchen.html",
+        {
+            "orders": page_obj,
+            "page_obj": page_obj,
+            "initial_orders_json": initial_orders_json,
+        },
+    )
+
+
+@login_required(login_url='login')
+def kitchen_poll(request):
+    """Lightweight poll endpoint for new/cancelled orders."""
+    orders = (
+        Order.objects
+        .exclude(status="CART")
+        .select_related("user")
+        .prefetch_related("items__product", "items__chosen_options__option__group")
+        .order_by("-created_at")[:50]
+    )
+
+    payload = _serialize_kitchen_orders(orders)
+
+    return JsonResponse({"orders": payload})
 
 
 @login_required(login_url='login')
