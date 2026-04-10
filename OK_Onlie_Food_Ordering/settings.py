@@ -34,8 +34,7 @@ SECRET_KEY = 'django-insecure-gezl+*lc1@n*s8=)1g1b7xh*lo)qdw_fmb2-qn-npe&pq_vgj=
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
-
+ALLOWED_HOSTS = ["omran-kebab.onrender.com", "127.0.0.1", "localhost"]
 
 # Application definition
 
