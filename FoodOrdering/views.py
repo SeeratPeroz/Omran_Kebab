@@ -1,4 +1,5 @@
 import json
+import re
 from decimal import Decimal
 import stripe
 from django.views.decorators.csrf import csrf_exempt
@@ -464,11 +465,29 @@ def _order_line_items_for_stripe(cart):
 def create_stripe_checkout_session(request):
     cart = get_cart(request)
 
-    if not cart.phone or not cart.address_line or not cart.postal_code or not cart.city:
-        return JsonResponse({"ok": False, "message": "Bitte zuerst Name/Telefon/Adresse eingeben."}, status=400)
+    # Read fields from POST (sent by JS before redirecting to Stripe)
+    first_name = (request.POST.get("first_name") or "").strip()
+    last_name = (request.POST.get("last_name") or "").strip()
+    phone = (request.POST.get("phone") or "").strip()
+    street = (request.POST.get("street") or "").strip()
+    postal_code = (request.POST.get("postal_code") or "").strip()
+    city = (request.POST.get("city") or "").strip()
+
+    # Validate format
+    errors = _validate_checkout_fields(first_name, last_name, phone, street, postal_code, city)
+    if errors:
+        return JsonResponse({"ok": False, "message": " ".join(errors)}, status=400)
 
     if cart.items.count() == 0:
         return JsonResponse({"ok": False, "message": "Warenkorb ist leer."}, status=400)
+
+    # Persist customer info so webhook can find it
+    cart.full_name = f"{first_name} {last_name}".strip()
+    cart.phone = phone
+    cart.address_line = street
+    cart.postal_code = postal_code
+    cart.city = city
+    cart.save(update_fields=["full_name", "phone", "address_line", "postal_code", "city"])
 
     success_url = request.build_absolute_uri(reverse("checkout_success"))
     cancel_url = request.build_absolute_uri(reverse("checkout_cancel"))
@@ -546,6 +565,61 @@ def stripe_webhook(request):
     return HttpResponse(status=200)
 
 
+def _validate_checkout_fields(first_name, last_name, phone, street, postal_code, city):
+    """
+    Validate checkout form fields. Returns a list of error strings (empty = valid).
+    """
+    errors = []
+    name_pattern = re.compile(r"^[\w\s\-'.]+$", re.UNICODE)
+
+    # first_name – optional, but if provided must be valid
+    if first_name:
+        if len(first_name) < 2:
+            errors.append("Vorname muss mindestens 2 Zeichen haben.")
+        elif not name_pattern.match(first_name):
+            errors.append("Vorname enthält ungültige Zeichen.")
+
+    # last_name – required
+    if not last_name:
+        errors.append("Nachname ist ein Pflichtfeld.")
+    elif len(last_name) < 2:
+        errors.append("Nachname muss mindestens 2 Zeichen haben.")
+    elif not name_pattern.match(last_name):
+        errors.append("Nachname enthält ungültige Zeichen.")
+
+    # phone – required + format
+    if not phone:
+        errors.append("Telefonnummer ist ein Pflichtfeld.")
+    else:
+        digits_only = re.sub(r"\D", "", phone)
+        if len(digits_only) < 6:
+            errors.append("Telefonnummer enthält zu wenige Ziffern.")
+        elif not re.match(r"^[+\d][\d\s\-().]+$", phone):
+            errors.append("Telefonnummer hat ein ungültiges Format.")
+
+    # street – required + must contain a digit (house number)
+    if not street:
+        errors.append("Straße & Hausnummer ist ein Pflichtfeld.")
+    elif len(street) < 4:
+        errors.append("Bitte vollständige Straße mit Hausnummer angeben.")
+    elif not any(ch.isdigit() for ch in street):
+        errors.append("Bitte auch die Hausnummer in der Straße angeben.")
+
+    # postal_code – required, exactly 5 digits
+    if not postal_code:
+        errors.append("PLZ ist ein Pflichtfeld.")
+    elif not re.match(r"^\d{5}$", postal_code):
+        errors.append("PLZ muss genau 5 Ziffern haben.")
+
+    # city – required
+    if not city:
+        errors.append("Stadt ist ein Pflichtfeld.")
+    elif len(city) < 2:
+        errors.append("Bitte eine gültige Stadt angeben.")
+
+    return errors
+
+
 # Save checkout info (name, phone, address)
 @require_POST
 def save_checkout_info(request):
@@ -558,9 +632,10 @@ def save_checkout_info(request):
     postal_code = (request.POST.get("postal_code") or "").strip()
     city = (request.POST.get("city") or "").strip()
 
-    # Required validation
-    if not last_name or not phone or not street or not postal_code or not city:
-        messages.error(request, "Bitte füllen Sie alle Pflichtfelder aus (Nachname, Telefon, Adresse).")
+    errors = _validate_checkout_fields(first_name, last_name, phone, street, postal_code, city)
+    if errors:
+        for err in errors:
+            messages.error(request, err)
         return redirect("cart_detail")
 
     # Save into Order
@@ -594,9 +669,11 @@ def place_cash_order(request):
     postal_code = (request.POST.get("postal_code") or "").strip()
     city = (request.POST.get("city") or "").strip()
 
-    # 3) Validate required fields
-    if not last_name or not phone or not street or not postal_code or not city:
-        messages.error(request, "Bitte füllen Sie alle Pflichtfelder (*) aus.")
+    # 3) Validate required fields + formats
+    errors = _validate_checkout_fields(first_name, last_name, phone, street, postal_code, city)
+    if errors:
+        for err in errors:
+            messages.error(request, err)
         return redirect("cart_detail")
 
     # 4) Save customer info into cart (Order)

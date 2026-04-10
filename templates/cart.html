@@ -166,47 +166,57 @@
             </div>
 
             <!-- Customer details (NO save button) -->
-            <form id="checkout-form" class="mb-3">
+            <form id="checkout-form" class="mb-3" novalidate>
               {% csrf_token %}
               <div class="row g-2">
                 <div class="col-12">
-                  <label class="form-label mb-1">Vorname</label>
+                  <label class="form-label mb-1" for="first_name">Vorname</label>
                   <input type="text" class="form-control" name="first_name" id="first_name"
-                         placeholder="z.B. Ali">
+                         placeholder="z.B. Ali" autocomplete="given-name">
+                  <div class="invalid-feedback" id="first_name-error"></div>
                 </div>
 
                 <div class="col-12">
-                  <label class="form-label mb-1">Nachname <span class="req">*</span></label>
+                  <label class="form-label mb-1" for="last_name">Nachname <span class="req">*</span></label>
                   <input type="text" class="form-control" name="last_name" id="last_name"
-                         placeholder="z.B. Ahmad" required>
+                         placeholder="z.B. Ahmad" autocomplete="family-name" required>
+                  <div class="invalid-feedback" id="last_name-error"></div>
                   <div class="field-hint">Pflichtfeld</div>
                 </div>
 
                 <div class="col-12">
-                  <label class="form-label mb-1">Telefon <span class="req">*</span></label>
-                  <input type="text" class="form-control" name="phone" id="phone"
-                         value="{{ cart.phone }}" placeholder="+49 ..." required>
-                  <div class="field-hint">Pflichtfeld</div>
+                  <label class="form-label mb-1" for="phone">Telefon <span class="req">*</span></label>
+                  <input type="tel" class="form-control" name="phone" id="phone"
+                         value="{{ cart.phone }}" placeholder="+49 151 12345678"
+                         autocomplete="tel" required>
+                  <div class="invalid-feedback" id="phone-error"></div>
+                  <div class="field-hint">Pflichtfeld · z.B. +49 151 12345678</div>
                 </div>
 
                 <div class="col-12">
-                  <label class="form-label mb-1">Straße & Hausnr. <span class="req">*</span></label>
+                  <label class="form-label mb-1" for="street">Straße & Hausnr. <span class="req">*</span></label>
                   <input type="text" class="form-control" name="street" id="street"
-                         value="{{ cart.address_line }}" placeholder="Musterstraße 12" required>
-                  <div class="field-hint">Pflichtfeld</div>
+                         value="{{ cart.address_line }}" placeholder="Musterstraße 12"
+                         autocomplete="street-address" required>
+                  <div class="invalid-feedback" id="street-error"></div>
+                  <div class="field-hint">Pflichtfeld · inkl. Hausnummer</div>
                 </div>
 
                 <div class="col-5">
-                  <label class="form-label mb-1">PLZ <span class="req">*</span></label>
+                  <label class="form-label mb-1" for="postal_code">PLZ <span class="req">*</span></label>
                   <input type="text" class="form-control" name="postal_code" id="postal_code"
-                         value="{{ cart.postal_code }}" placeholder="04103" required>
-                  <div class="field-hint">Pflichtfeld</div>
+                         value="{{ cart.postal_code }}" placeholder="04103"
+                         autocomplete="postal-code" maxlength="5" inputmode="numeric" required>
+                  <div class="invalid-feedback" id="postal_code-error"></div>
+                  <div class="field-hint">Pflichtfeld · 5 Ziffern</div>
                 </div>
 
                 <div class="col-7">
-                  <label class="form-label mb-1">Stadt <span class="req">*</span></label>
+                  <label class="form-label mb-1" for="city">Stadt <span class="req">*</span></label>
                   <input type="text" class="form-control" name="city" id="city"
-                         value="{{ cart.city }}" placeholder="Leipzig" required>
+                         value="{{ cart.city }}" placeholder="Leipzig"
+                         autocomplete="address-level2" required>
+                  <div class="invalid-feedback" id="city-error"></div>
                   <div class="field-hint">Pflichtfeld</div>
                 </div>
               </div>
@@ -304,19 +314,122 @@
     return cookieValue;
   }
 
-  // Enable payment buttons only when required fields are filled
-  const requiredIds = ["last_name", "phone", "street", "postal_code", "city"];
+  // ── Validation rules ──────────────────────────────────────────────
+  const FIELD_RULES = {
+    first_name: {
+      required: false,
+      validate(v) {
+        if (v === "") return null; // optional – empty is fine
+        if (v.length < 2) return "Vorname muss mindestens 2 Zeichen haben.";
+        if (!/^[\p{L}\s\-'.]+$/u.test(v)) return "Vorname darf nur Buchstaben enthalten.";
+        return null;
+      },
+    },
+    last_name: {
+      required: true,
+      validate(v) {
+        if (v === "") return "Nachname ist ein Pflichtfeld.";
+        if (v.length < 2) return "Nachname muss mindestens 2 Zeichen haben.";
+        if (!/^[\p{L}\s\-'.]+$/u.test(v)) return "Nachname darf nur Buchstaben enthalten.";
+        return null;
+      },
+    },
+    phone: {
+      required: true,
+      validate(v) {
+        if (v === "") return "Telefonnummer ist ein Pflichtfeld.";
+        // Allow: digits, spaces, +, -, (), min 6 digits total
+        const digits = v.replace(/\D/g, "");
+        if (digits.length < 6) return "Bitte geben Sie eine gültige Telefonnummer ein.";
+        if (!/^[+\d][\d\s\-().]+$/.test(v)) return "Ungültiges Format (z.B. +49 151 12345678).";
+        return null;
+      },
+    },
+    street: {
+      required: true,
+      validate(v) {
+        if (v === "") return "Straße & Hausnummer ist ein Pflichtfeld.";
+        if (v.length < 4) return "Bitte vollständige Straße mit Hausnummer angeben.";
+        if (!/\d/.test(v)) return "Bitte auch die Hausnummer angeben.";
+        return null;
+      },
+    },
+    postal_code: {
+      required: true,
+      validate(v) {
+        if (v === "") return "PLZ ist ein Pflichtfeld.";
+        if (!/^\d{5}$/.test(v)) return "PLZ muss genau 5 Ziffern haben.";
+        return null;
+      },
+    },
+    city: {
+      required: true,
+      validate(v) {
+        if (v === "") return "Stadt ist ein Pflichtfeld.";
+        if (v.length < 2) return "Bitte geben Sie eine gültige Stadt an.";
+        if (!/^[\p{L}\s\-'.()]+$/u.test(v)) return "Stadt darf nur Buchstaben enthalten.";
+        return null;
+      },
+    },
+  };
+
   const cashBtn = document.getElementById("pay-cash");
   const stripeBtn = document.getElementById("pay-stripe");
   const helpTxt = document.getElementById("payment-help");
 
   function getVal(id) {
-    const el = document.getElementById(id);
-    return (el?.value || "").trim();
+    return (document.getElementById(id)?.value || "").trim();
   }
 
-  function allRequiredFilled() {
-    return requiredIds.every(id => getVal(id).length > 0);
+  /** Returns error string or null if valid. */
+  function validateField(id) {
+    const rule = FIELD_RULES[id];
+    if (!rule) return null;
+    return rule.validate(getVal(id));
+  }
+
+  /** Apply visual state to one field. Returns true if valid. */
+  function applyFieldState(id, error, touched = true) {
+    const el = document.getElementById(id);
+    const errEl = document.getElementById(`${id}-error`);
+    if (!el) return true;
+
+    if (!touched) {
+      el.classList.remove("is-valid", "is-invalid");
+      if (errEl) errEl.textContent = "";
+      return error === null;
+    }
+
+    if (error) {
+      el.classList.add("is-invalid");
+      el.classList.remove("is-valid");
+      if (errEl) errEl.textContent = error;
+      return false;
+    } else {
+      el.classList.remove("is-invalid");
+      // Show green tick only for non-empty optional or any filled required field
+      if (getVal(id) !== "" || FIELD_RULES[id]?.required) {
+        el.classList.add("is-valid");
+      }
+      if (errEl) errEl.textContent = "";
+      return true;
+    }
+  }
+
+  /** Validate all fields (touching them). Returns true if all pass. */
+  function validateAll() {
+    let allOk = true;
+    for (const id of Object.keys(FIELD_RULES)) {
+      const err = validateField(id);
+      const ok = applyFieldState(id, err, true);
+      if (!ok) allOk = false;
+    }
+    return allOk;
+  }
+
+  /** Check silently (no visual) if all required fields pass – used to enable buttons. */
+  function allValid() {
+    return Object.keys(FIELD_RULES).every(id => validateField(id) === null);
   }
 
   function setEnabled(enabled) {
@@ -326,6 +439,7 @@
       helpTxt.textContent = enabled
         ? "✓ Daten vollständig. Bitte Zahlungsart wählen."
         : "Bitte füllen Sie die Pflichtfelder aus, um fortzufahren.";
+      helpTxt.style.color = enabled ? "#198754" : "";
     }
   }
 
@@ -338,40 +452,59 @@
     document.getElementById("cash_city").value = getVal("city");
   }
 
-  // Initial state (if cart already has some saved values)
-  setEnabled(allRequiredFilled());
+  // Initial state (cart may already have saved values – validate silently)
+  setEnabled(allValid());
+  // If fields already have values (from server), show green ticks immediately
+  for (const id of Object.keys(FIELD_RULES)) {
+    if (getVal(id) !== "") applyFieldState(id, validateField(id), true);
+  }
 
-  // On input changes
-  ["first_name", ...requiredIds].forEach(id => {
+  // Per-field listeners: validate on input + blur
+  for (const id of Object.keys(FIELD_RULES)) {
     const el = document.getElementById(id);
-    if (!el) return;
+    if (!el) continue;
     el.addEventListener("input", () => {
-      setEnabled(allRequiredFilled());
+      applyFieldState(id, validateField(id), true);
+      setEnabled(allValid());
     });
+    el.addEventListener("blur", () => {
+      // Only show red on blur if the field still has an error
+      applyFieldState(id, validateField(id), true);
+      setEnabled(allValid());
+    });
+  }
+
+  // PLZ: only allow digits while typing
+  document.getElementById("postal_code")?.addEventListener("keypress", (e) => {
+    if (!/\d/.test(e.key)) e.preventDefault();
   });
 
-  // Before cash submit: ensure still valid + copy fields
+  // Before cash submit: full validation + copy hidden fields
   document.getElementById("cash-form")?.addEventListener("submit", function (e) {
-    if (!allRequiredFilled()) {
+    const ok = validateAll();
+    setEnabled(ok);
+    if (!ok) {
       e.preventDefault();
-      setEnabled(false);
-      alert("Bitte füllen Sie alle Pflichtfelder (*) aus.");
+      // Scroll to first invalid field
+      const firstInvalid = document.querySelector("#checkout-form .is-invalid");
+      firstInvalid?.scrollIntoView({ behavior: "smooth", block: "center" });
       return;
     }
     syncCashHiddenFields();
   });
 
-  // Stripe: POST details + create checkout session
+  // Stripe: full validation then POST
   document.getElementById("pay-stripe")?.addEventListener("click", async () => {
-    if (!allRequiredFilled()) {
-      setEnabled(false);
-      alert("Bitte füllen Sie alle Pflichtfelder (*) aus.");
+    const ok = validateAll();
+    setEnabled(ok);
+    if (!ok) {
+      const firstInvalid = document.querySelector("#checkout-form .is-invalid");
+      firstInvalid?.scrollIntoView({ behavior: "smooth", block: "center" });
       return;
     }
 
     const csrftoken = getCookie("csrftoken");
 
-    // Build form data from checkout form
     const fd = new FormData();
     fd.append("first_name", getVal("first_name"));
     fd.append("last_name", getVal("last_name"));
@@ -382,7 +515,7 @@
 
     try {
       const resp = await fetch("{% url 'create_stripe_checkout_session' %}", {
-        method: "POST",                 // ✅ POST because we send user details
+        method: "POST",
         credentials: "same-origin",
         headers: {
           "X-Requested-With": "XMLHttpRequest",
