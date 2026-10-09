@@ -29,6 +29,7 @@ class Command(BaseCommand):
             ("VEGETARISCH", 30),
             ("BEILAGEN", 40),
             ("SOẞEN", 50),
+            ("PIZZA-SPECIAL (GROß)", 55),
             ("ALKOHOLFREIE GETRÄNKE", 60),
         ]
 
@@ -57,13 +58,13 @@ class Command(BaseCommand):
             ("Döner-Teller mit Salat", "10.00", "DÖNER"),
             ("Döner-Teller mit Pommes Frites & Salat", "12.00", "DÖNER"),
             ("Döner-Teller mit Reis & Salat", "12.00", "DÖNER"),
-            ("Hähnchen-Döner", "5.00", "DÖNER"),
+            ("Hähnchen-Döner", "6.00", "DÖNER"),
             ("Big-Hähnchen-Döner", "7.50", "DÖNER"),
-            ("Hähnchen-Box mit Pommes Frites", "5.00", "DÖNER"),
-            ("Hähnchen-Dürüm", "6.00", "DÖNER"),
-            ("Hähnchen-Teller mit Salat", "5.00", "DÖNER"),
-            ("Hähnchen-Teller mit Pommes Frites & Salat", "9.50", "DÖNER"),
-            ("Hähnchen-Teller mit Reis & Salat", "7.00", "DÖNER"),
+            ("Hähnchen-Box mit Pommes Frites", "8.00", "DÖNER"),
+            ("Hähnchen-Dürüm", "8.00", "DÖNER"),
+            ("Hähnchen-Teller mit Salat", "12.00", "DÖNER"),
+            ("Hähnchen-Teller mit Pommes Frites & Salat", "12.00", "DÖNER"),
+            ("Hähnchen-Teller mit Reis & Salat", "12.00", "DÖNER"),
             ("Lahmacun", "9.00", "DÖNER"),
 
             # SPEZIALITÄTEN
@@ -91,26 +92,43 @@ class Command(BaseCommand):
             ("17 ml Heinz Ketchup", "0.50", "SOẞEN"),
             ("17 ml Heinz Mayonnaise", "0.50", "SOẞEN"),
 
+            # PIZZA-SPECIAL (GROß) - prefixed with "Pizza" so slugs don't clash with Spezialitäten
+            ("Pizza Margherita", "9.00", "PIZZA-SPECIAL (GROß)", "Tomaten, Käse"),
+            ("Pizza Hawaii", "10.00", "PIZZA-SPECIAL (GROß)", "Schinken, Ananas, Käse"),
+            ("Pizza Mozzarella", "10.00", "PIZZA-SPECIAL (GROß)", "Tomaten, Mozzarella"),
+            ("Pizza Salami", "10.00", "PIZZA-SPECIAL (GROß)", "Käse, Salami"),
+            ("Pizza Fantasta", "10.00", "PIZZA-SPECIAL (GROß)", "Spinat, Mozzarella, Käse"),
+            ("Pizza Tschelo Kubideh", "10.00", "PIZZA-SPECIAL (GROß)", "Rinderhackfleisch"),
+            ("Pizza Tschelo Tschendje", "10.00", "PIZZA-SPECIAL (GROß)", "Spieß mit mariniertem Lammfleisch"),
+            ("Pizza Djudjeh Be Ostkokhan", "11.00", "PIZZA-SPECIAL (GROß)", "Spieß mit knusprigem Hähnchen"),
+            ("Pizza Soltani Kebab", "11.00", "PIZZA-SPECIAL (GROß)", "Dünnes, mariniertes Lammfleisch am Spieß"),
+            ("Pizza Fantastica", "11.00", "PIZZA-SPECIAL (GROß)", "Brokkoli, Käse, Zwiebeln, Oliven, Peperoni"),
+            ("Pizza Fungi", "11.00", "PIZZA-SPECIAL (GROß)", "Champignons, Käse, Zwiebeln, Oliven, Peperoni"),
+            ("Pizza Djudjeh Kebap", "11.00", "PIZZA-SPECIAL (GROß)", "Hähnchen-Spieß"),
+            ("Pizza Tunfisch", "11.00", "PIZZA-SPECIAL (GROß)", "Tunfisch, Käse, Zwiebeln, Oliven"),
+            ("Pizza Sereshk Polo", "11.00", "PIZZA-SPECIAL (GROß)", "Reisteller mit Rosinen"),
+
             # ALKOHOLFREIE GETRÄNKE
             ("Apollinaris Classic 0,5 l", "0.85", "ALKOHOLFREIE GETRÄNKE"),
-            ("Coca-Cola® 1,0 l", "2.85", "ALKOHOLFREIE GETRÄNKE"),
+            ("Coca-Cola® 1,0 l", "3.50", "ALKOHOLFREIE GETRÄNKE"),
             ("Coca-Cola® 0,33 l", "2.25", "ALKOHOLFREIE GETRÄNKE"),
-            ("Fanta 1,0 l", "2.85", "ALKOHOLFREIE GETRÄNKE"),
+            ("Fanta 1,0 l", "3.50", "ALKOHOLFREIE GETRÄNKE"),
             ("Fanta 0,33 l", "2.25", "ALKOHOLFREIE GETRÄNKE"),
             ("Fanta Exotic 0,33 l", "2.00", "ALKOHOLFREIE GETRÄNKE"),
-            ("Club Mate 0,5 l", "2.35", "ALKOHOLFREIE GETRÄNKE"),
+            ("Club Mate 0,5 l", "2.50", "ALKOHOLFREIE GETRÄNKE"),
             ("Mio Mio Mate Original 0,5 l", "3.50", "ALKOHOLFREIE GETRÄNKE"),
         ]
 
         products = {}
-        for name, price, cat_name in products_data:
+        for name, price, cat_name, *rest in products_data:
+            description = rest[0] if rest else ""
             slug = slugify(name)
             prod, _ = Product.objects.get_or_create(
                 slug=slug,
                 defaults={
                     "category": categories[cat_name],
                     "name": name,
-                    "description": "",
+                    "description": description,
                     "price": Decimal(price),
                     "is_available": True,
                 },
@@ -118,6 +136,7 @@ class Command(BaseCommand):
             # keep updated on re-run
             prod.category = categories[cat_name]
             prod.name = name
+            prod.description = description
             prod.price = Decimal(price)
             prod.is_available = True
             prod.save()
@@ -187,8 +206,8 @@ class Command(BaseCommand):
         # 5) Attach groups to products
         # -------------------------
         # Rule from you: max 1 (already in group). Apply Sauce to all DÖNER + VEGETARISCH products.
-        donor_names = [name for name, _, cat in products_data if cat == "DÖNER"]
-        veg_names = [name for name, _, cat in products_data if cat == "VEGETARISCH"]
+        donor_names = [name for name, _, cat, *_ in products_data if cat == "DÖNER"]
+        veg_names = [name for name, _, cat, *_ in products_data if cat == "VEGETARISCH"]
 
         for pname in donor_names + veg_names:
             self._attach_group(products[pname], sauce_group, sort_order=10)
